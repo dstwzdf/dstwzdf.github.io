@@ -16,7 +16,7 @@
 <meta property="og:description" content="CANNARY(栈保护)这个选项表示栈保护功能有没有开启。栈溢出保护是一种缓冲区溢出攻击缓解手段，当函数存在缓冲区溢出攻击漏洞时，攻击者可以覆盖栈上的返回地址来让shellcode能够得到执行。当启用栈保护后，函数开始执行的时候会先往栈里插入cookie信息，当函数真正返回的时候会验证cookie信息是否合法，如果不合法就停止程序运行。攻击者在覆盖返回地址的时候往往也会将cookie信息给覆盖掉，">
 <meta property="og:locale" content="en_US">
 <meta property="article:published_time" content="2021-09-24T15:13:41.000Z">
-<meta property="article:modified_time" content="2021-09-24T15:15:01.216Z">
+<meta property="article:modified_time" content="2021-09-24T15:33:58.238Z">
 <meta property="article:author" content="John Doe">
 <meta name="twitter:card" content="summary">
   
