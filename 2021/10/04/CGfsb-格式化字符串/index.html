@@ -6,15 +6,26 @@
   <meta name="renderer" content="webkit">
   <meta http-equiv="X-UA-Compatible" content="IE=edge" >
   <link rel="dns-prefetch" href="http://example.com">
-  <title>Archives: 2021 | Hexo</title>
+  <title>CGfsb 格式化字符串 | Hexo</title>
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
-  <meta property="og:type" content="website">
-<meta property="og:title" content="Hexo">
-<meta property="og:url" content="http://example.com/archives/2021/index.html">
+  <meta name="description" content="收获：检查断点的不同1.gets对于数组的输入直接再 gets 断点2.fgets 要在 吓一跳printf 断点 （跟容易看到输入的数据再栈上的偏移量？）fgets函数  在s中输入打包地址即可  偏移量的计算方法1.爆破，cyclic 2002.在gets函数设置断点 ，看数组s的偏移量3.在fgets函数的吓一条printf 函数设置断点 ，看输入数据在栈上的偏移 格式化问题1.printf">
+<meta property="og:type" content="article">
+<meta property="og:title" content="CGfsb 格式化字符串">
+<meta property="og:url" content="http://example.com/2021/10/04/CGfsb-%E6%A0%BC%E5%BC%8F%E5%8C%96%E5%AD%97%E7%AC%A6%E4%B8%B2/index.html">
 <meta property="og:site_name" content="Hexo">
+<meta property="og:description" content="收获：检查断点的不同1.gets对于数组的输入直接再 gets 断点2.fgets 要在 吓一跳printf 断点 （跟容易看到输入的数据再栈上的偏移量？）fgets函数  在s中输入打包地址即可  偏移量的计算方法1.爆破，cyclic 2002.在gets函数设置断点 ，看数组s的偏移量3.在fgets函数的吓一条printf 函数设置断点 ，看输入数据在栈上的偏移 格式化问题1.printf">
 <meta property="og:locale" content="en_US">
+<meta property="og:image" content="http://example.com/2021/10/04/CGfsb-%E6%A0%BC%E5%BC%8F%E5%8C%96%E5%AD%97%E7%AC%A6%E4%B8%B2/1.png">
+<meta property="og:image" content="http://example.com/2021/10/04/CGfsb-%E6%A0%BC%E5%BC%8F%E5%8C%96%E5%AD%97%E7%AC%A6%E4%B8%B2/2.png">
+<meta property="og:image" content="http://example.com/2021/10/04/CGfsb-%E6%A0%BC%E5%BC%8F%E5%8C%96%E5%AD%97%E7%AC%A6%E4%B8%B2/3.png">
+<meta property="og:image" content="http://example.com/2021/10/04/CGfsb-%E6%A0%BC%E5%BC%8F%E5%8C%96%E5%AD%97%E7%AC%A6%E4%B8%B2/4.png">
+<meta property="og:image" content="http://example.com/2021/10/04/CGfsb-%E6%A0%BC%E5%BC%8F%E5%8C%96%E5%AD%97%E7%AC%A6%E4%B8%B2/5.png">
+<meta property="og:image" content="http://example.com/2021/10/04/CGfsb-%E6%A0%BC%E5%BC%8F%E5%8C%96%E5%AD%97%E7%AC%A6%E4%B8%B2/6.png">
+<meta property="article:published_time" content="2021-10-04T08:35:24.000Z">
+<meta property="article:modified_time" content="2021-10-04T08:37:25.995Z">
 <meta property="article:author" content="John Doe">
 <meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="http://example.com/2021/10/04/CGfsb-%E6%A0%BC%E5%BC%8F%E5%8C%96%E5%AD%97%E7%AC%A6%E4%B8%B2/1.png">
   
     <link rel="alternative" href="/atom.xml" title="Hexo" type="application/atom+xml">
   
@@ -150,238 +161,180 @@
             <canvas data-colors="#eaeaea" data-sectionHeight="100" data-contentId="js-content" id="myCanvas1" class="anm-canvas"></canvas>
           </div>
           <div id="js-content" class="content-ll">
-            
-  
-  
+            <article id="post-CGfsb-格式化字符串" class="article article-type-post " itemscope itemprop="blogPost">
+  <div class="article-inner">
     
-    
-      
-      
-      <section class="archives-wrap">
-        <div class="archive-year-wrap">
-          <a href="/archives/2021" class="archive-year">2021</a>
-        </div>
-        <div class="archives">
-    
-    <article class="archive-article archive-type-post">
-  <div class="archive-article-inner">
-    <header class="archive-article-header">
-      	<div class="article-meta">
-	      	<a href="/2021/10/04/String-%E6%A0%BC%E5%BC%8F%E5%8C%96%E5%AD%97%E7%AC%A6%E4%B8%B2-scanf/" class="archive-article-date">
-  	<time datetime="2021-10-04T08:38:54.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2021-10-04</time>
-</a>
-        </div>
-    	 
+      <header class="article-header">
+        
   
-    <h1 itemprop="name">
-      <a class="archive-article-title" href="/2021/10/04/String-%E6%A0%BC%E5%BC%8F%E5%8C%96%E5%AD%97%E7%AC%A6%E4%B8%B2-scanf/">String   格式化字符串 scanf</a>
+    <h1 class="article-title" itemprop="name">
+      CGfsb 格式化字符串
     </h1>
   
 
-        <div class="article-info info-on-right">
-          
-          
-
-        </div>
-        <div class="clearfix"></div>
-    </header>
-  </div>
-</article>
-  
-    
-    
-    <article class="archive-article archive-type-post">
-  <div class="archive-article-inner">
-    <header class="archive-article-header">
-      	<div class="article-meta">
-	      	<a href="/2021/10/04/level3-%E6%9F%A5%E6%89%BEsystem%E5%9C%B0%E5%9D%80%E6%9F%A5%E6%89%BEbinsh/" class="archive-article-date">
-  	<time datetime="2021-10-04T08:37:54.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2021-10-04</time>
-</a>
-        </div>
-    	 
-  
-    <h1 itemprop="name">
-      <a class="archive-article-title" href="/2021/10/04/level3-%E6%9F%A5%E6%89%BEsystem%E5%9C%B0%E5%9D%80%E6%9F%A5%E6%89%BEbinsh/">level3  查找system地址查找binsh</a>
-    </h1>
-  
-
-        <div class="article-info info-on-right">
-          
-          
-
-        </div>
-        <div class="clearfix"></div>
-    </header>
-  </div>
-</article>
-  
-    
-    
-    <article class="archive-article archive-type-post">
-  <div class="archive-article-inner">
-    <header class="archive-article-header">
-      	<div class="article-meta">
-	      	<a href="/2021/10/04/CGfsb-%E6%A0%BC%E5%BC%8F%E5%8C%96%E5%AD%97%E7%AC%A6%E4%B8%B2/" class="archive-article-date">
+        
+        <a href="/2021/10/04/CGfsb-%E6%A0%BC%E5%BC%8F%E5%8C%96%E5%AD%97%E7%AC%A6%E4%B8%B2/" class="archive-article-date">
   	<time datetime="2021-10-04T08:35:24.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2021-10-04</time>
 </a>
-        </div>
-    	 
-  
-    <h1 itemprop="name">
-      <a class="archive-article-title" href="/2021/10/04/CGfsb-%E6%A0%BC%E5%BC%8F%E5%8C%96%E5%AD%97%E7%AC%A6%E4%B8%B2/">CGfsb 格式化字符串</a>
-    </h1>
-  
+        
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <p>收获：<br>检查断点的不同<br>1.gets对于数组的输入直接再 gets 断点<br>2.fgets 要在 吓一跳printf 断点 （跟容易看到输入的数据再栈上的偏移量？）<br>fgets函数</p>
+<ol>
+<li><img src="/2021/10/04/CGfsb-%E6%A0%BC%E5%BC%8F%E5%8C%96%E5%AD%97%E7%AC%A6%E4%B8%B2/1.png" alt="BP"><br>在s中输入打包地址即可</li>
+</ol>
+<p>偏移量的计算方法<br>1.爆破，cyclic 200<br>2.在gets函数设置断点 ，看数组s的偏移量<br>3.在fgets函数的吓一条printf 函数设置断点 ，看输入数据在栈上的偏移</p>
+<p>格式化问题<br>1.printf （s）与 printf （&amp;s） 都存在 格式化字符的严重错误<br>2.printf、sprintf、fprintf 等 print 家族函数都有可能引起格式化问题</p>
+<hr>
+<p>常用基本的格式化字符串参数介绍：<br>%c：输出字符，配上%n 可用于向指定地址写数据。<br>%d：输出十进制整数，配上%n 可用于向指定地址写数据。<br> %x：输出 16 进制数据，如%i$x 表示要泄漏偏移 i 处 4 字节长的 16 进制数 据，<br>%i$lx 表示要泄漏偏移 i 处 8 字节长的 16 进制数据，32bit 和 64bit 环境下一 样。<br> %p：输出 16 进制数据，与%x 基本一样，只是附加了前缀 0x，在 32bit 下输 出 4 字节，在 64bit 下输出 8 字节，可通过输出字节的长度来判断目标环境是 32bit 还是 64bit。<br> %s：输出的内容是字符串，即将偏移处指针指向的字符串输出，如%i$s 表示 输出偏移 i 处地址所指向的字符串，在 32bit 和 64bit 环境下一样，可用于读取 GOT 表等信息。<br> %n：将%n 之前 printf 已经打印的字符个数赋值给偏移处指针所指向的地址 位置，如%100×10$n 表示将 0x64 写入偏移 10 处保存的指针所指向的地址（4 字节），<br>而%$hn 表示写入的地址空间为 2 字节，%$hhn 表示写入的地址空间为 1 字节，%$lln 表示写入的地址空间为 8 字节，在 32bit 和 64bit 环境下一样。有时， 直接写 4 字节会导致程序崩溃或等候时间过长，可以通过%$hn 或%$hhn 来适时 调整。<br> %n 是通过格式化字符串漏洞改变程序流程的关键方式，而其他格式化字符 串参数可用于读取信息或配合%n 写数据。</p>
+<p>根据IDA的反汇编看 需要让pwnme的数据变成8，又因为pwnme在 .bss 段（全局变量 地址永远不变） ，</p>
+<p><img src="/2021/10/04/CGfsb-%E6%A0%BC%E5%BC%8F%E5%8C%96%E5%AD%97%E7%AC%A6%E4%B8%B2/2.png" alt="BP"><br>解题思路，<br>向pwnme地址的数据变为8<br>1.查看 输入的数据在栈上偏移量（x）为多少   （即 %x$n 即可在对应地址中输入数据）<br>2.查看 pwnme 的地址<br>3.payload = p32(pwnme_add)+‘aaaa’+‘%10$n’  ; (由于将pwnme_add的地址输入给s时已经打包成4个字节 ，还差4个字节 为8 ，则再填充四个a ，随后 格式化一下即可)<br><img src="/2021/10/04/CGfsb-%E6%A0%BC%E5%BC%8F%E5%8C%96%E5%AD%97%E7%AC%A6%E4%B8%B2/3.png" alt="BP"></p>
+<p>如图，在pwnme的地址上 ，输入8个字节再格式化就可以使得pwnme==8</p>
+<p>第一种检查格式化字符串的偏移量 方法<br>首先我们得计算 s 在format参数(栈上)的偏移量<br><img src="/2021/10/04/CGfsb-%E6%A0%BC%E5%BC%8F%E5%8C%96%E5%AD%97%E7%AC%A6%E4%B8%B2/4.png" alt="BP"></p>
+<p>第二种检查格式化字符串的偏移量 方法  （如果偏移很大就用这种方法）<br>在fgets函数的 下一条 命令即printf 设置断点<br><img src="/2021/10/04/CGfsb-%E6%A0%BC%E5%BC%8F%E5%8C%96%E5%AD%97%E7%AC%A6%E4%B8%B2/5.png" alt="BP"><br><img src="/2021/10/04/CGfsb-%E6%A0%BC%E5%BC%8F%E5%8C%96%E5%AD%97%E7%AC%A6%E4%B8%B2/6.png" alt="BP"></p>
+<p>查看我们输入的参数位置在第10位，从零开始，数到箭头位置是第十位</p>
+<p>思路：从AAAA开始到0x41414141共10个数 则我们 需要 在 后面加上 %10$n ,即表示在偏移10位后%n（格式化），</p>
+<p>构建payload：payload = p32(pwnme_add)+‘aaaa’+‘%10$n’</p>
 
-        <div class="article-info info-on-right">
-          
-          
+      
 
+      
+        <div class="page-reward">
+          <a href="javascript:;" class="page-reward-btn tooltip-top">
+            <div class="tooltip tooltip-east">
+            <span class="tooltip-item">
+              赏
+            </span>
+            <span class="tooltip-content">
+              <span class="tooltip-text">
+                <span class="tooltip-inner">
+                  <p class="reward-p"><i class="icon icon-quo-left"></i>谢谢你请我吃糖果<i class="icon icon-quo-right"></i></p>
+                  <div class="reward-box">
+                    
+                    
+                  </div>
+                </span>
+              </span>
+            </span>
+          </div>
+          </a>
         </div>
-        <div class="clearfix"></div>
-    </header>
+      
+    </div>
+    <div class="article-info article-info-index">
+      
+      
+      
+
+      
+
+      
+        
+<div class="share-btn share-icons tooltip-left">
+  <div class="tooltip tooltip-east">
+    <span class="tooltip-item">
+      <a href="javascript:;" class="share-sns share-outer">
+        <i class="icon icon-share"></i>
+      </a>
+    </span>
+    <span class="tooltip-content">
+      <div class="share-wrap">
+        <div class="share-icons">
+          <a class="weibo share-sns" href="javascript:;" data-type="weibo">
+            <i class="icon icon-weibo"></i>
+          </a>
+          <a class="weixin share-sns wxFab" href="javascript:;" data-type="weixin">
+            <i class="icon icon-weixin"></i>
+          </a>
+          <a class="qq share-sns" href="javascript:;" data-type="qq">
+            <i class="icon icon-qq"></i>
+          </a>
+          <a class="douban share-sns" href="javascript:;" data-type="douban">
+            <i class="icon icon-douban"></i>
+          </a>
+          <a class="qzone share-sns" href="javascript:;" data-type="qzone">
+            <i class="icon icon-qzone"></i>
+          </a>
+          <a class="facebook share-sns" href="javascript:;" data-type="facebook">
+            <i class="icon icon-facebook"></i>
+          </a>
+          <a class="twitter share-sns" href="javascript:;" data-type="twitter">
+            <i class="icon icon-twitter"></i>
+          </a>
+          <a class="google share-sns" href="javascript:;" data-type="google">
+            <i class="icon icon-google"></i>
+          </a>
+        </div>
+      </div>
+    </span>
+  </div>
+</div>
+
+<div class="page-modal wx-share js-wx-box">
+    <a class="close js-modal-close" href="javascript:;"><i class="icon icon-close"></i></a>
+    <p>扫一扫，分享到微信</p>
+    <div class="wx-qrcode">
+      <img src="//pan.baidu.com/share/qrcode?url=http://example.com/2021/10/04/CGfsb-%E6%A0%BC%E5%BC%8F%E5%8C%96%E5%AD%97%E7%AC%A6%E4%B8%B2/" alt="微信分享二维码">
+    </div>
+</div>
+
+<div class="mask js-mask"></div>
+      
+      <div class="clearfix"></div>
+    </div>
   </div>
 </article>
+
   
-    
-    
-    <article class="archive-article archive-type-post">
-  <div class="archive-article-inner">
-    <header class="archive-article-header">
-      	<div class="article-meta">
-	      	<a href="/2021/10/04/cgpwn2-%E4%B8%8E-level2/" class="archive-article-date">
-  	<time datetime="2021-10-04T08:31:55.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2021-10-04</time>
-</a>
+<nav id="article-nav">
+  
+    <a href="/2021/10/04/level3-%E6%9F%A5%E6%89%BEsystem%E5%9C%B0%E5%9D%80%E6%9F%A5%E6%89%BEbinsh/" id="article-nav-newer" class="article-nav-link-wrap">
+      <i class="icon-circle-left"></i>
+      <div class="article-nav-title">
+        
+          level3  查找system地址查找binsh
+        
+      </div>
+    </a>
+  
+  
+    <a href="/2021/10/04/cgpwn2-%E4%B8%8E-level2/" id="article-nav-older" class="article-nav-link-wrap">
+      <div class="article-nav-title">cgpwn2 与 level2</div>
+      <i class="icon-circle-right"></i>
+    </a>
+  
+</nav>
+
+
+<aside class="wrap-side-operation">
+    <div class="mod-side-operation">
+        
+        <div class="jump-container" id="js-jump-container" style="display:none;">
+            <a href="javascript:void(0)" class="mod-side-operation__jump-to-top">
+                <i class="icon-font icon-back"></i>
+            </a>
+            <div id="js-jump-plan-container" class="jump-plan-container" style="top: -11px;">
+                <i class="icon-font icon-plane jump-plane"></i>
+            </div>
         </div>
-    	 
+        
+        
+    </div>
+</aside>
+
+
+
   
-    <h1 itemprop="name">
-      <a class="archive-article-title" href="/2021/10/04/cgpwn2-%E4%B8%8E-level2/">cgpwn2 与 level2</a>
-    </h1>
+  
   
 
-        <div class="article-info info-on-right">
-          
-          
-
-        </div>
-        <div class="clearfix"></div>
-    </header>
-  </div>
-</article>
-  
-    
-    
-    <article class="archive-article archive-type-post">
-  <div class="archive-article-inner">
-    <header class="archive-article-header">
-      	<div class="article-meta">
-	      	<a href="/2021/10/04/%E5%AD%97%E8%8A%82%E6%BA%A2%E5%87%BA/" class="archive-article-date">
-  	<time datetime="2021-10-04T08:25:46.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2021-10-04</time>
-</a>
-        </div>
-    	 
-  
-    <h1 itemprop="name">
-      <a class="archive-article-title" href="/2021/10/04/%E5%AD%97%E8%8A%82%E6%BA%A2%E5%87%BA/">字节溢出</a>
-    </h1>
   
 
-        <div class="article-info info-on-right">
-          
-          
-
-        </div>
-        <div class="clearfix"></div>
-    </header>
-  </div>
-</article>
-  
-    
-    
-    <article class="archive-article archive-type-post">
-  <div class="archive-article-inner">
-    <header class="archive-article-header">
-      	<div class="article-meta">
-	      	<a href="/2021/09/24/day-1%E4%BF%9D%E6%8A%A4%E6%9C%BA%E5%88%B6/" class="archive-article-date">
-  	<time datetime="2021-09-24T15:13:41.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2021-09-24</time>
-</a>
-        </div>
-    	 
-  
-    <h1 itemprop="name">
-      <a class="archive-article-title" href="/2021/09/24/day-1%E4%BF%9D%E6%8A%A4%E6%9C%BA%E5%88%B6/">day 1保护机制</a>
-    </h1>
   
 
-        <div class="article-info info-on-right">
-          
-          
-
-        </div>
-        <div class="clearfix"></div>
-    </header>
-  </div>
-</article>
   
-    
-    
-    <article class="archive-article archive-type-post">
-  <div class="archive-article-inner">
-    <header class="archive-article-header">
-      	<div class="article-meta">
-	      	<a href="/2021/09/22/%E2%80%9DPICTURE%E2%80%9C/" class="archive-article-date">
-  	<time datetime="2021-09-22T13:35:32.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2021-09-22</time>
-</a>
-        </div>
-    	 
-  
-    <h1 itemprop="name">
-      <a class="archive-article-title" href="/2021/09/22/%E2%80%9DPICTURE%E2%80%9C/">”PICTURE“</a>
-    </h1>
-  
-
-        <div class="article-info info-on-right">
-          
-          
-
-        </div>
-        <div class="clearfix"></div>
-    </header>
-  </div>
-</article>
-  
-    
-    
-    <article class="archive-article archive-type-post">
-  <div class="archive-article-inner">
-    <header class="archive-article-header">
-      	<div class="article-meta">
-	      	<a href="/2021/09/22/hello-world/" class="archive-article-date">
-  	<time datetime="2021-09-22T12:14:16.537Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2021-09-22</time>
-</a>
-        </div>
-    	 
-  
-    <h1 itemprop="name">
-      <a class="archive-article-title" href="/2021/09/22/hello-world/">Hello World</a>
-    </h1>
-  
-
-        <div class="article-info info-on-right">
-          
-          
-
-        </div>
-        <div class="clearfix"></div>
-    </header>
-  </div>
-</article>
-  
-  
-    </div></section>
-  
-
-    
 
 
           </div>
@@ -404,8 +357,8 @@
 	var yiliaConfig = {
 		mathjax: false,
 		isHome: false,
-		isPost: false,
-		isArchive: true,
+		isPost: true,
+		isArchive: false,
 		isTag: false,
 		isCategory: false,
 		open_in_new: false,

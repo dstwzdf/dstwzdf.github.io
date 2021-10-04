@@ -152,6 +152,231 @@
           <div id="js-content" class="content-ll">
             
   
+    <article id="post-String-格式化字符串-scanf" class="article article-type-post  article-index" itemscope itemprop="blogPost">
+  <div class="article-inner">
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2021/10/04/String-%E6%A0%BC%E5%BC%8F%E5%8C%96%E5%AD%97%E7%AC%A6%E4%B8%B2-scanf/">String   格式化字符串 scanf</a>
+    </h1>
+  
+
+        
+        <a href="/2021/10/04/String-%E6%A0%BC%E5%BC%8F%E5%8C%96%E5%AD%97%E7%AC%A6%E4%B8%B2-scanf/" class="archive-article-date">
+  	<time datetime="2021-10-04T08:38:54.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2021-10-04</time>
+</a>
+        
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <p><img src="/2021/10/04/String-%E6%A0%BC%E5%BC%8F%E5%8C%96%E5%AD%97%E7%AC%A6%E4%B8%B2-scanf/1.png" alt="BP"><br>无system  （构建shellcode）<br>格式化字符串 ×2 （偏移量要注意）<br>无binsh<br><img src="/2021/10/04/String-%E6%A0%BC%E5%BC%8F%E5%8C%96%E5%AD%97%E7%AC%A6%E4%B8%B2-scanf/2.png" alt="BP"></p>
+<p>问题 ：<br>context(arch=’amd64’, os=’linux’, log_level=’debug’)   ？<br>v4_addr = int(p.recvuntil(‘\n’)[:-1], 16)  ？  为什么不是 [ 0：4 ] ，加个16 什么意思<br><img src="/2021/10/04/String-%E6%A0%BC%E5%BC%8F%E5%8C%96%E5%AD%97%E7%AC%A6%E4%B8%B2-scanf/3.png" alt="BP"><br>binsh不用吗？ 与 ret2shellcode 不太一样 ？<br>format参数的偏移量指到第一位就好了吗？</p>
+<p>收获 ：<br>另外一种格式化字符串 scanf<br><img src="/2021/10/04/String-%E6%A0%BC%E5%BC%8F%E5%8C%96%E5%AD%97%E7%AC%A6%E4%B8%B2-scanf/4.png" alt="BP"><br>fgets(s, 100, stdin);     fgets 函数后就是printf 输出 format 参数 ， 直接 输入”aaaa“+“-%p”*10 ，只分了一次数一数就直接是aaaa在栈上的偏移量<br><img src="/2021/10/04/String-%E6%A0%BC%E5%BC%8F%E5%8C%96%E5%AD%97%E7%AC%A6%E4%B8%B2-scanf/5.png" alt="BP"></p>
+<p>在 String 中 ，分别有两个 scanf （） ，其次再printf 输出 format 参数，则 我们在第一个scanf 函数 输入v4 的地址给v2，后输入 ”aaaa“+“-%p”*10，找出偏移量，<br><img src="/2021/10/04/String-%E6%A0%BC%E5%BC%8F%E5%8C%96%E5%AD%97%E7%AC%A6%E4%B8%B2-scanf/6.png" alt="BP"><br>0x41414141，距离’AAAA‘ 有8偏移量，但实际偏移量是 8-1 （7），因为在第一次scanf 输入了 一次，已经是在format参数 的第一个了（也就是 0x41414141的前一位 ），所以偏移量是7。<br> 因为要往v4地址中输入数据，即指向v2（填了v4的地址）就行了 ，也就是偏移量是7，才能在v4中输入数据85</p>
+<p>解题思路：<br>格式字符串 输入一个地址后 查看 输入的数据在栈上偏移量（x）为多少   （即 %x$n 即可在对应地址中输入数据）<br>包装v4地址  –&gt; v4_addr = int(p.recvuntil(‘\n’)[:-1], 16)<br>构建shellcode<br><img src="/2021/10/04/String-%E6%A0%BC%E5%BC%8F%E5%8C%96%E5%AD%97%E7%AC%A6%E4%B8%B2-scanf/7.png" alt="BP"></p>
+<p>运行一遍 程序 ，找到了 格式化字符串的 楼栋函数 printf（format），<br><img src="/2021/10/04/String-%E6%A0%BC%E5%BC%8F%E5%8C%96%E5%AD%97%E7%AC%A6%E4%B8%B2-scanf/8.png" alt="BP"><br>接着走到这里，条件允许才可以read函数 读取我们自己构建的shellcode ，</p>
+<p>a1是前面提到的v4传入函数的形参，就是个地址。 a[0]=v4[0]=v3[0]=68 , a[1]=v4[1]=v3[1]=85 。要将a[0]和 a[1]修改为相同的值。<br>可以通过前面提到的格式化字符串漏洞来修改。<br>函数sub_400BB9()内的v2是我们输入的v4的地址，我们需要知道v2在栈内的位置，这样才能通过 %?$n 向v2指向的 地址处写入字符串长度。</p>
+<p><img src="/2021/10/04/String-%E6%A0%BC%E5%BC%8F%E5%8C%96%E5%AD%97%E7%AC%A6%E4%B8%B2-scanf/9.png" alt="BP"><br>之后构建shellcode，（但是为什么不用binsh？和ret2shellcode不太一样？）</p>
+<p>之后就pwn！啦</p>
+<p>获得执行system(“/bin/sh”)汇编代码所对应的机器码： asm(shellcraft.sh()) 。注意要指明arch和os。arch有 i386(x86)和amd64(x64)。攻防世界的题解区有人说这个函数失效，其实是因为他没指明环境。不同环境下的汇编代 码是不同的。<br> 代码的第二段从 printf(“secret[0] is %x\n”, v4, a2); 输出的字符串中，提取v4的地址，注意把末尾的 \n 剔 除。 然后代码的第四段Give me an address，注意源代码中 _isoc99_scanf(“%ld”, &amp;v2); ,读入的不是字符串，是 int64，是个数字，不要输入0x开头的字符串，也不要类似于1003fd2c的十六进制字符串，就输入一个十进制数字就 行。不要使用p64()转换！！！int转换即可，但是send发送的是一个字符串，所以再str一下。</p>
+
+      
+
+      
+    </div>
+    <div class="article-info article-info-index">
+      
+      
+      
+
+      
+        <p class="article-more-link">
+          <a class="article-more-a" href="/2021/10/04/String-%E6%A0%BC%E5%BC%8F%E5%8C%96%E5%AD%97%E7%AC%A6%E4%B8%B2-scanf/">展开全文 >></a>
+        </p>
+      
+
+      
+      <div class="clearfix"></div>
+    </div>
+  </div>
+</article>
+
+<aside class="wrap-side-operation">
+    <div class="mod-side-operation">
+        
+        <div class="jump-container" id="js-jump-container" style="display:none;">
+            <a href="javascript:void(0)" class="mod-side-operation__jump-to-top">
+                <i class="icon-font icon-back"></i>
+            </a>
+            <div id="js-jump-plan-container" class="jump-plan-container" style="top: -11px;">
+                <i class="icon-font icon-plane jump-plane"></i>
+            </div>
+        </div>
+        
+        
+    </div>
+</aside>
+
+
+
+
+  
+    <article id="post-level3-查找system地址查找binsh" class="article article-type-post  article-index" itemscope itemprop="blogPost">
+  <div class="article-inner">
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2021/10/04/level3-%E6%9F%A5%E6%89%BEsystem%E5%9C%B0%E5%9D%80%E6%9F%A5%E6%89%BEbinsh/">level3  查找system地址查找binsh</a>
+    </h1>
+  
+
+        
+        <a href="/2021/10/04/level3-%E6%9F%A5%E6%89%BEsystem%E5%9C%B0%E5%9D%80%E6%9F%A5%E6%89%BEbinsh/" class="archive-article-date">
+  	<time datetime="2021-10-04T08:37:54.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2021-10-04</time>
+</a>
+        
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <p>收获<br>参数问题<br>puts 函数 只需要给一个参数<br>write 函数 需要给三个参数 （根据原函数来给 参数赋值）<br>    payload=’A’*0x8c+p32(write_plt)+p32(main_plt)+p32(1)+p32(write_got)+p32(4)</p>
+<p>问题：<br>后面的三个参数是否有顺序，还是说一定是 p32(1) + 任意一个打包地址 + p32(4)<br>p32(1) 与 p32(4) 的区别是？</p>
+<p>在程序中查看libc版本的方法。</p>
+<hr>
+<p>解题思路与基本ROP的ret2libc3一样</p>
+<p>解题思路：<br>1.无system和bin (IDA没有实际是有的)，利用plt和got表来查找它们的地址<br>2.泄露libc地址，找到一个函数的真实地址并且知道libc的版本号就可以知道偏移量从而知道每个函数的真实地址。<br>3.真实地址需要接收：u32(q.recv()[0:4])，打包成32位的地址<br>4.基地址+函数偏移量=函数真实地址</p>
+<p>不同点 ，<br>ret2libc3 中用的是puts函数而 level3 用的是write函数</p>
+<p>puts 函数 只需要给一个参数<br>write 函数 需要给三个参数 （根据情况来给 参数赋值）</p>
+<p><img src="/2021/10/04/level3-%E6%9F%A5%E6%89%BEsystem%E5%9C%B0%E5%9D%80%E6%9F%A5%E6%89%BEbinsh/1.png" alt="BP"><br>    payload=’A’*0x8c+p32(write_plt)+p32(main_plt)+p32(1)+p32(write_got)+p32(4)</p>
+<p>后面的三个参数是否有顺序，还是说一定是 p32(1) + 任意一个打包地址 + p32(4)<br>p32(1) 与 p32(4) 的区别是？</p>
+<p>在程序中查看libc版本的方法。</p>
+<p>查找到 libc 版本就知道了偏移量也就知道了  system函数和binsh的地址啦！！</p>
+<p>详细构建思路<br>#获取文件对象<br>elf=ELF(‘./level3/level3’)<br>#获取函数<br>write_plt=elf.plt[‘write’]<br>write_got=elf.got[‘write’]<br>main_addr=elf.sym[‘main’]</p>
+
+      
+
+      
+    </div>
+    <div class="article-info article-info-index">
+      
+      
+      
+
+      
+        <p class="article-more-link">
+          <a class="article-more-a" href="/2021/10/04/level3-%E6%9F%A5%E6%89%BEsystem%E5%9C%B0%E5%9D%80%E6%9F%A5%E6%89%BEbinsh/">展开全文 >></a>
+        </p>
+      
+
+      
+      <div class="clearfix"></div>
+    </div>
+  </div>
+</article>
+
+<aside class="wrap-side-operation">
+    <div class="mod-side-operation">
+        
+        <div class="jump-container" id="js-jump-container" style="display:none;">
+            <a href="javascript:void(0)" class="mod-side-operation__jump-to-top">
+                <i class="icon-font icon-back"></i>
+            </a>
+            <div id="js-jump-plan-container" class="jump-plan-container" style="top: -11px;">
+                <i class="icon-font icon-plane jump-plane"></i>
+            </div>
+        </div>
+        
+        
+    </div>
+</aside>
+
+
+
+
+  
+    <article id="post-CGfsb-格式化字符串" class="article article-type-post  article-index" itemscope itemprop="blogPost">
+  <div class="article-inner">
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2021/10/04/CGfsb-%E6%A0%BC%E5%BC%8F%E5%8C%96%E5%AD%97%E7%AC%A6%E4%B8%B2/">CGfsb 格式化字符串</a>
+    </h1>
+  
+
+        
+        <a href="/2021/10/04/CGfsb-%E6%A0%BC%E5%BC%8F%E5%8C%96%E5%AD%97%E7%AC%A6%E4%B8%B2/" class="archive-article-date">
+  	<time datetime="2021-10-04T08:35:24.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2021-10-04</time>
+</a>
+        
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <p>收获：<br>检查断点的不同<br>1.gets对于数组的输入直接再 gets 断点<br>2.fgets 要在 吓一跳printf 断点 （跟容易看到输入的数据再栈上的偏移量？）<br>fgets函数</p>
+<ol>
+<li><img src="/2021/10/04/CGfsb-%E6%A0%BC%E5%BC%8F%E5%8C%96%E5%AD%97%E7%AC%A6%E4%B8%B2/1.png" alt="BP"><br>在s中输入打包地址即可</li>
+</ol>
+<p>偏移量的计算方法<br>1.爆破，cyclic 200<br>2.在gets函数设置断点 ，看数组s的偏移量<br>3.在fgets函数的吓一条printf 函数设置断点 ，看输入数据在栈上的偏移</p>
+<p>格式化问题<br>1.printf （s）与 printf （&amp;s） 都存在 格式化字符的严重错误<br>2.printf、sprintf、fprintf 等 print 家族函数都有可能引起格式化问题</p>
+<hr>
+<p>常用基本的格式化字符串参数介绍：<br>%c：输出字符，配上%n 可用于向指定地址写数据。<br>%d：输出十进制整数，配上%n 可用于向指定地址写数据。<br> %x：输出 16 进制数据，如%i$x 表示要泄漏偏移 i 处 4 字节长的 16 进制数 据，<br>%i$lx 表示要泄漏偏移 i 处 8 字节长的 16 进制数据，32bit 和 64bit 环境下一 样。<br> %p：输出 16 进制数据，与%x 基本一样，只是附加了前缀 0x，在 32bit 下输 出 4 字节，在 64bit 下输出 8 字节，可通过输出字节的长度来判断目标环境是 32bit 还是 64bit。<br> %s：输出的内容是字符串，即将偏移处指针指向的字符串输出，如%i$s 表示 输出偏移 i 处地址所指向的字符串，在 32bit 和 64bit 环境下一样，可用于读取 GOT 表等信息。<br> %n：将%n 之前 printf 已经打印的字符个数赋值给偏移处指针所指向的地址 位置，如%100×10$n 表示将 0x64 写入偏移 10 处保存的指针所指向的地址（4 字节），<br>而%$hn 表示写入的地址空间为 2 字节，%$hhn 表示写入的地址空间为 1 字节，%$lln 表示写入的地址空间为 8 字节，在 32bit 和 64bit 环境下一样。有时， 直接写 4 字节会导致程序崩溃或等候时间过长，可以通过%$hn 或%$hhn 来适时 调整。<br> %n 是通过格式化字符串漏洞改变程序流程的关键方式，而其他格式化字符 串参数可用于读取信息或配合%n 写数据。</p>
+<p>根据IDA的反汇编看 需要让pwnme的数据变成8，又因为pwnme在 .bss 段（全局变量 地址永远不变） ，</p>
+<p><img src="/2021/10/04/CGfsb-%E6%A0%BC%E5%BC%8F%E5%8C%96%E5%AD%97%E7%AC%A6%E4%B8%B2/2.png" alt="BP"><br>解题思路，<br>向pwnme地址的数据变为8<br>1.查看 输入的数据在栈上偏移量（x）为多少   （即 %x$n 即可在对应地址中输入数据）<br>2.查看 pwnme 的地址<br>3.payload = p32(pwnme_add)+‘aaaa’+‘%10$n’  ; (由于将pwnme_add的地址输入给s时已经打包成4个字节 ，还差4个字节 为8 ，则再填充四个a ，随后 格式化一下即可)<br><img src="/2021/10/04/CGfsb-%E6%A0%BC%E5%BC%8F%E5%8C%96%E5%AD%97%E7%AC%A6%E4%B8%B2/3.png" alt="BP"></p>
+<p>如图，在pwnme的地址上 ，输入8个字节再格式化就可以使得pwnme==8</p>
+<p>第一种检查格式化字符串的偏移量 方法<br>首先我们得计算 s 在format参数(栈上)的偏移量<br><img src="/2021/10/04/CGfsb-%E6%A0%BC%E5%BC%8F%E5%8C%96%E5%AD%97%E7%AC%A6%E4%B8%B2/4.png" alt="BP"></p>
+<p>第二种检查格式化字符串的偏移量 方法  （如果偏移很大就用这种方法）<br>在fgets函数的 下一条 命令即printf 设置断点<br><img src="/2021/10/04/CGfsb-%E6%A0%BC%E5%BC%8F%E5%8C%96%E5%AD%97%E7%AC%A6%E4%B8%B2/5.png" alt="BP"><br><img src="/2021/10/04/CGfsb-%E6%A0%BC%E5%BC%8F%E5%8C%96%E5%AD%97%E7%AC%A6%E4%B8%B2/6.png" alt="BP"></p>
+<p>查看我们输入的参数位置在第10位，从零开始，数到箭头位置是第十位</p>
+<p>思路：从AAAA开始到0x41414141共10个数 则我们 需要 在 后面加上 %10$n ,即表示在偏移10位后%n（格式化），</p>
+<p>构建payload：payload = p32(pwnme_add)+‘aaaa’+‘%10$n’</p>
+
+      
+
+      
+    </div>
+    <div class="article-info article-info-index">
+      
+      
+      
+
+      
+        <p class="article-more-link">
+          <a class="article-more-a" href="/2021/10/04/CGfsb-%E6%A0%BC%E5%BC%8F%E5%8C%96%E5%AD%97%E7%AC%A6%E4%B8%B2/">展开全文 >></a>
+        </p>
+      
+
+      
+      <div class="clearfix"></div>
+    </div>
+  </div>
+</article>
+
+<aside class="wrap-side-operation">
+    <div class="mod-side-operation">
+        
+        <div class="jump-container" id="js-jump-container" style="display:none;">
+            <a href="javascript:void(0)" class="mod-side-operation__jump-to-top">
+                <i class="icon-font icon-back"></i>
+            </a>
+            <div id="js-jump-plan-container" class="jump-plan-container" style="top: -11px;">
+                <i class="icon-font icon-plane jump-plane"></i>
+            </div>
+        </div>
+        
+        
+    </div>
+</aside>
+
+
+
+
+  
     <article id="post-cgpwn2-与-level2" class="article article-type-post  article-index" itemscope itemprop="blogPost">
   <div class="article-inner">
     
