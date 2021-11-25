@@ -152,6 +152,219 @@
           <div id="js-content" class="content-ll">
             
   
+    <article id="post-鹤城杯" class="article article-type-post  article-index" itemscope itemprop="blogPost">
+  <div class="article-inner">
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2021/11/25/%E9%B9%A4%E5%9F%8E%E6%9D%AF/">鹤城杯</a>
+    </h1>
+  
+
+        
+        <a href="/2021/11/25/%E9%B9%A4%E5%9F%8E%E6%9D%AF/" class="archive-article-date">
+  	<time datetime="2021-11-25T07:27:49.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2021-11-25</time>
+</a>
+        
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <p>问题：<br><img src="/2021/11/25/%E9%B9%A4%E5%9F%8E%E6%9D%AF/1.png" alt="BP"></p>
+<p>为什么 要    ret=0x400506  ？<br>在.init 上找 ？</p>
+<p>在 x64 程序泄露 libc 地址的时候 ，由于参数传入不一样<br>构造payload的顺序也是不一样的     </p>
+<p>x64 ：payload =’a’*0x48+p64(pop_rdi)+p64(puts_got)+p64(puts_plt)+p64(main)<br>x86:  先传入plt表再传入需要返回的地址 ，，再传入got表 </p>
+<p>找出 pop rdi 的地址 ，<br><img src="/2021/11/25/%E9%B9%A4%E5%9F%8E%E6%9D%AF/2.png" alt="BP"></p>
+<p>则edi（pop_rdi = 0x400763） 的地址就是 0x400763 ？</p>
+<p>问题：利用一下来看一下pop rdi的地址，一般在    pop  r15下面 ？<br>ROPgadget –binary pwn100 –only “pop|ret” | grep rdi<br>利用辅助函数 puts 先传入got表 再传入plt 表 之后再传入返回的地址 也就是 main （重新运行一下程序）</p>
+<p>之后接收puts的真实地址<br>x64 如下：<br>puts_addr = u64(p.recv(6).ljust(8,’\x00’))</p>
+<p>之后构建完binsh地址以及system地址 就可以 发送payload啦</p>
+<p>payload2 = ‘a’*0x48+p64(ret)+p64(pop_rdi)+p64(sh_addr)+p64(sys_addr)</p>
+<p>后面是 binsh 的地址 再传入system函数地址 ，至于为什么 要ret 且ret=0x400506 我不清楚 ？</p>
+
+      
+
+      
+    </div>
+    <div class="article-info article-info-index">
+      
+      
+      
+
+      
+        <p class="article-more-link">
+          <a class="article-more-a" href="/2021/11/25/%E9%B9%A4%E5%9F%8E%E6%9D%AF/">展开全文 >></a>
+        </p>
+      
+
+      
+      <div class="clearfix"></div>
+    </div>
+  </div>
+</article>
+
+<aside class="wrap-side-operation">
+    <div class="mod-side-operation">
+        
+        <div class="jump-container" id="js-jump-container" style="display:none;">
+            <a href="javascript:void(0)" class="mod-side-operation__jump-to-top">
+                <i class="icon-font icon-back"></i>
+            </a>
+            <div id="js-jump-plan-container" class="jump-plan-container" style="top: -11px;">
+                <i class="icon-font icon-plane jump-plane"></i>
+            </div>
+        </div>
+        
+        
+    </div>
+</aside>
+
+
+
+
+  
+    <article id="post-off-by-one" class="article article-type-post  article-index" itemscope itemprop="blogPost">
+  <div class="article-inner">
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2021/11/25/off-by-one/">off-by-one</a>
+    </h1>
+  
+
+        
+        <a href="/2021/11/25/off-by-one/" class="archive-article-date">
+  	<time datetime="2021-11-25T07:26:29.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2021-11-25</time>
+</a>
+        
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <p>off-by-one（写入长度只超出一个字节）</p>
+<p>off-by-one 利用思路 ¶    （最主要的方式还是使得块重叠）<br>溢出字节为可控制任意字节：通过修改大小造成块结构之间出现重叠，从而泄露其他块数据，或是覆盖其他块数据。也可使用 NULL 字节溢出的方法<br>溢出字节为 NULL 字节：在 size 为 0x100 的时候，溢出 NULL 字节可以使得 prev_in_use 位被清，这样前块会被认为是 free 块。（1） 这时可以选择使用 unlink 方法（见 unlink 部分）进行处理。（2） 另外，这时 prev_size 域就会启用，就可以伪造 prev_size ，从而造成块之间发生重叠。此方法的关键在于 unlink 的时候没有检查按照 prev_size 找到的块的大小与prev_size 是否一致。</p>
+
+      
+
+      
+    </div>
+    <div class="article-info article-info-index">
+      
+      
+      
+
+      
+        <p class="article-more-link">
+          <a class="article-more-a" href="/2021/11/25/off-by-one/">展开全文 >></a>
+        </p>
+      
+
+      
+      <div class="clearfix"></div>
+    </div>
+  </div>
+</article>
+
+<aside class="wrap-side-operation">
+    <div class="mod-side-operation">
+        
+        <div class="jump-container" id="js-jump-container" style="display:none;">
+            <a href="javascript:void(0)" class="mod-side-operation__jump-to-top">
+                <i class="icon-font icon-back"></i>
+            </a>
+            <div id="js-jump-plan-container" class="jump-plan-container" style="top: -11px;">
+                <i class="icon-font icon-plane jump-plane"></i>
+            </div>
+        </div>
+        
+        
+    </div>
+</aside>
+
+
+
+
+  
+    <article id="post-堆溢出" class="article article-type-post  article-index" itemscope itemprop="blogPost">
+  <div class="article-inner">
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2021/11/25/%E5%A0%86%E6%BA%A2%E5%87%BA/">堆溢出</a>
+    </h1>
+  
+
+        
+        <a href="/2021/11/25/%E5%A0%86%E6%BA%A2%E5%87%BA/" class="archive-article-date">
+  	<time datetime="2021-11-25T07:23:47.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2021-11-25</time>
+</a>
+        
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <p>堆的结构 ，<br><img src="/2021/11/25/%E5%A0%86%E6%BA%A2%E5%87%BA/1.png" alt="BP"><br><img src="/2021/11/25/%E5%A0%86%E6%BA%A2%E5%87%BA/2.png" alt="BP"></p>
+<p>关键 ：<br>由于堆溢出没有返回地址 ，所以我们的策略是去覆盖下一个chunk的信息。</p>
+<p>寻找危险函数 ¶<br>通过寻找危险函数，我们快速确定程序是否可能有堆溢出，以及有的话，堆溢出的位置在哪里。<br>常见的危险函数如下<br>输入<br>gets，直接读取一行，忽略 ‘\x00’<br>scanf<br>vscanf<br>输出<br>sprintf<br>字符串<br>strcpy，字符串复制，遇到 ‘\x00’ 停止<br>strcat，字符串拼接，遇到 ‘\x00’ 停止<br>bcopy</p>
+<p>小总结 ¶<br>堆溢出中比较重要的几个步骤:<br>寻找堆分配函数 ¶<br>通常来说堆是通过调用 glibc 函数 malloc 进行分配的，在某些情况下会使用 calloc 分配。calloc 与 malloc 的区别是 calloc 在分配后会自动进行清空，这对于某些信息泄露漏洞的利用来说是致命的。<br>calloc(0x20);<br>//等同于<br>ptr=malloc(0x20);<br>memset(ptr,0,0x20);</p>
+<p>除此之外，还有一种分配是经由 realloc 进行的，realloc 函数可以身兼 malloc 和 free 两个函数的功能。<br>#include &lt;stdio.h&gt;</p>
+<p>int main(void)<br>{<br>  char *chunk,*chunk1;<br>  chunk=malloc(16);<br>  chunk1=realloc(chunk,32);<br>  return 0;<br>}</p>
+<p>realloc 的操作并不是像字面意义上那么简单，其内部会根据不同的情况进行不同操作<br>当 realloc(ptr,size) 的 size 不等于 ptr 的 size 时<br>如果申请 size &gt; 原来 size<br>如果 chunk 与 top chunk 相邻，直接扩展这个 chunk 到新 size 大小<br>如果 chunk 与 top chunk 不相邻，相当于 free(ptr),malloc(new_size)<br>如果申请 size &lt; 原来 size<br>如果相差不足以容得下一个最小 chunk(64 位下 32 个字节，32 位下 16 个字节)，则保持不变<br>如果相差可以容得下一个最小 chunk，则切割原 chunk 为两部分，free 掉后一部分<br>当 realloc(ptr,size) 的 size 等于 0 时，相当于 free(ptr)<br>当 realloc(ptr,size) 的 size 等于 ptr 的 size，不进行任何操作</p>
+<p>确定填充长度 ¶<br>这一部分主要是计算我们开始写入的地址与我们所要覆盖的地址之间的距离。 一个常见的误区是 malloc 的参数等于实际分配堆块的大小，但是事实上 ptmalloc 分配出来的大小是对齐的。这个长度一般是字长的 2 倍，比如 32 位系统是 8 个字节，64 位系统是 16 个字节。但是对于不大于 2 倍字长的请求，malloc 会直接返回 2 倍字长的块也就是最小 chunk，比如 64 位系统执行malloc(0)会返回用户区域为 16 字节的块。<br><img src="/2021/11/25/%E5%A0%86%E6%BA%A2%E5%87%BA/3.png" alt="BP"></p>
+<p>注意用户区域的大小不等于 chunk_head.size，chunk_head.size = 用户区域大小 + 2 * 字长<br>还有一点是之前所说的用户申请的内存大小会被修改，其有可能会使用与其物理相邻的下一个 chunk 的 prev_size 字段储存内容。回头再来看下之前的示例代码<br><img src="/2021/11/25/%E5%A0%86%E6%BA%A2%E5%87%BA/4.png" alt="BP"></p>
+<p>观察如上代码，我们申请的 chunk 大小是 24 个字节。但是我们将其编译为 64 位可执行程序时，实际上分配的内存会是 16 个字节而不是 24 个。<br><img src="/2021/11/25/%E5%A0%86%E6%BA%A2%E5%87%BA/5.png" alt="BP"></p>
+<p>16 个字节的空间是如何装得下 24 个字节的内容呢？答案是借用了下一个块的 pre_size 域。我们可来看一下用户申请的内存大小与 glibc 中实际分配的内存大小之间的转换。</p>
+<p><img src="/2021/11/25/%E5%A0%86%E6%BA%A2%E5%87%BA/6.png" alt="BP"></p>
+<p>当 req=24 时，request2size(24)=32。而除去 chunk 头部的 16 个字节。实际上用户可用 chunk 的字节数为 16。而根据我们前面学到的知识可以知道 chunk 的 pre_size 仅当它的前一块处于释放状态时才起作用。所以用户这时候其实还可以使用下一个 chunk 的 prev_size 字段，正好 24 个字节。实际上 ptmalloc 分配内存是以双字为基本单位，以 64 位系统为例，分配出来的空间是 16 的整数倍，即用户申请的 chunk 都是 16 字节对齐的。</p>
+<p>当64位程序申请的大小大于自身size但是是24的时候，presize为8所以可以在下一个chunk的presize开阔</p>
+
+      
+
+      
+    </div>
+    <div class="article-info article-info-index">
+      
+      
+      
+
+      
+        <p class="article-more-link">
+          <a class="article-more-a" href="/2021/11/25/%E5%A0%86%E6%BA%A2%E5%87%BA/">展开全文 >></a>
+        </p>
+      
+
+      
+      <div class="clearfix"></div>
+    </div>
+  </div>
+</article>
+
+<aside class="wrap-side-operation">
+    <div class="mod-side-operation">
+        
+        <div class="jump-container" id="js-jump-container" style="display:none;">
+            <a href="javascript:void(0)" class="mod-side-operation__jump-to-top">
+                <i class="icon-font icon-back"></i>
+            </a>
+            <div id="js-jump-plan-container" class="jump-plan-container" style="top: -11px;">
+                <i class="icon-font icon-plane jump-plane"></i>
+            </div>
+        </div>
+        
+        
+    </div>
+</aside>
+
+
+
+
+  
     <article id="post-堆" class="article article-type-post  article-index" itemscope itemprop="blogPost">
   <div class="article-inner">
     
@@ -620,223 +833,6 @@
       
         <p class="article-more-link">
           <a class="article-more-a" href="/2021/10/04/level3-%E6%9F%A5%E6%89%BEsystem%E5%9C%B0%E5%9D%80%E6%9F%A5%E6%89%BEbinsh/">展开全文 >></a>
-        </p>
-      
-
-      
-      <div class="clearfix"></div>
-    </div>
-  </div>
-</article>
-
-<aside class="wrap-side-operation">
-    <div class="mod-side-operation">
-        
-        <div class="jump-container" id="js-jump-container" style="display:none;">
-            <a href="javascript:void(0)" class="mod-side-operation__jump-to-top">
-                <i class="icon-font icon-back"></i>
-            </a>
-            <div id="js-jump-plan-container" class="jump-plan-container" style="top: -11px;">
-                <i class="icon-font icon-plane jump-plane"></i>
-            </div>
-        </div>
-        
-        
-    </div>
-</aside>
-
-
-
-
-  
-    <article id="post-CGfsb-格式化字符串" class="article article-type-post  article-index" itemscope itemprop="blogPost">
-  <div class="article-inner">
-    
-      <header class="article-header">
-        
-  
-    <h1 itemprop="name">
-      <a class="article-title" href="/2021/10/04/CGfsb-%E6%A0%BC%E5%BC%8F%E5%8C%96%E5%AD%97%E7%AC%A6%E4%B8%B2/">CGfsb 格式化字符串</a>
-    </h1>
-  
-
-        
-        <a href="/2021/10/04/CGfsb-%E6%A0%BC%E5%BC%8F%E5%8C%96%E5%AD%97%E7%AC%A6%E4%B8%B2/" class="archive-article-date">
-  	<time datetime="2021-10-04T08:35:24.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2021-10-04</time>
-</a>
-        
-      </header>
-    
-    <div class="article-entry" itemprop="articleBody">
-      
-        <p>收获：<br>检查断点的不同<br>1.gets对于数组的输入直接再 gets 断点<br>2.fgets 要在 吓一跳printf 断点 （跟容易看到输入的数据再栈上的偏移量？）<br>fgets函数</p>
-<ol>
-<li><img src="/2021/10/04/CGfsb-%E6%A0%BC%E5%BC%8F%E5%8C%96%E5%AD%97%E7%AC%A6%E4%B8%B2/1.png" alt="BP"><br>在s中输入打包地址即可</li>
-</ol>
-<p>偏移量的计算方法<br>1.爆破，cyclic 200<br>2.在gets函数设置断点 ，看数组s的偏移量<br>3.在fgets函数的吓一条printf 函数设置断点 ，看输入数据在栈上的偏移</p>
-<p>格式化问题<br>1.printf （s）与 printf （&amp;s） 都存在 格式化字符的严重错误<br>2.printf、sprintf、fprintf 等 print 家族函数都有可能引起格式化问题</p>
-<hr>
-<p>常用基本的格式化字符串参数介绍：<br>%c：输出字符，配上%n 可用于向指定地址写数据。<br>%d：输出十进制整数，配上%n 可用于向指定地址写数据。<br> %x：输出 16 进制数据，如%i$x 表示要泄漏偏移 i 处 4 字节长的 16 进制数 据，<br>%i$lx 表示要泄漏偏移 i 处 8 字节长的 16 进制数据，32bit 和 64bit 环境下一 样。<br> %p：输出 16 进制数据，与%x 基本一样，只是附加了前缀 0x，在 32bit 下输 出 4 字节，在 64bit 下输出 8 字节，可通过输出字节的长度来判断目标环境是 32bit 还是 64bit。<br> %s：输出的内容是字符串，即将偏移处指针指向的字符串输出，如%i$s 表示 输出偏移 i 处地址所指向的字符串，在 32bit 和 64bit 环境下一样，可用于读取 GOT 表等信息。<br> %n：将%n 之前 printf 已经打印的字符个数赋值给偏移处指针所指向的地址 位置，如%100×10$n 表示将 0x64 写入偏移 10 处保存的指针所指向的地址（4 字节），<br>而%$hn 表示写入的地址空间为 2 字节，%$hhn 表示写入的地址空间为 1 字节，%$lln 表示写入的地址空间为 8 字节，在 32bit 和 64bit 环境下一样。有时， 直接写 4 字节会导致程序崩溃或等候时间过长，可以通过%$hn 或%$hhn 来适时 调整。<br> %n 是通过格式化字符串漏洞改变程序流程的关键方式，而其他格式化字符 串参数可用于读取信息或配合%n 写数据。</p>
-<p>根据IDA的反汇编看 需要让pwnme的数据变成8，又因为pwnme在 .bss 段（全局变量 地址永远不变） ，</p>
-<p><img src="/2021/10/04/CGfsb-%E6%A0%BC%E5%BC%8F%E5%8C%96%E5%AD%97%E7%AC%A6%E4%B8%B2/2.png" alt="BP"><br>解题思路，<br>向pwnme地址的数据变为8<br>1.查看 输入的数据在栈上偏移量（x）为多少   （即 %x$n 即可在对应地址中输入数据）<br>2.查看 pwnme 的地址<br>3.payload = p32(pwnme_add)+‘aaaa’+‘%10$n’  ; (由于将pwnme_add的地址输入给s时已经打包成4个字节 ，还差4个字节 为8 ，则再填充四个a ，随后 格式化一下即可)<br><img src="/2021/10/04/CGfsb-%E6%A0%BC%E5%BC%8F%E5%8C%96%E5%AD%97%E7%AC%A6%E4%B8%B2/3.png" alt="BP"></p>
-<p>如图，在pwnme的地址上 ，输入8个字节再格式化就可以使得pwnme==8</p>
-<p>第一种检查格式化字符串的偏移量 方法<br>首先我们得计算 s 在format参数(栈上)的偏移量<br><img src="/2021/10/04/CGfsb-%E6%A0%BC%E5%BC%8F%E5%8C%96%E5%AD%97%E7%AC%A6%E4%B8%B2/4.png" alt="BP"></p>
-<p>第二种检查格式化字符串的偏移量 方法  （如果偏移很大就用这种方法）<br>在fgets函数的 下一条 命令即printf 设置断点<br><img src="/2021/10/04/CGfsb-%E6%A0%BC%E5%BC%8F%E5%8C%96%E5%AD%97%E7%AC%A6%E4%B8%B2/5.png" alt="BP"><br><img src="/2021/10/04/CGfsb-%E6%A0%BC%E5%BC%8F%E5%8C%96%E5%AD%97%E7%AC%A6%E4%B8%B2/6.png" alt="BP"></p>
-<p>查看我们输入的参数位置在第10位，从零开始，数到箭头位置是第十位</p>
-<p>思路：从AAAA开始到0x41414141共10个数 则我们 需要 在 后面加上 %10$n ,即表示在偏移10位后%n（格式化），</p>
-<p>构建payload：payload = p32(pwnme_add)+‘aaaa’+‘%10$n’</p>
-
-      
-
-      
-    </div>
-    <div class="article-info article-info-index">
-      
-      
-      
-
-      
-        <p class="article-more-link">
-          <a class="article-more-a" href="/2021/10/04/CGfsb-%E6%A0%BC%E5%BC%8F%E5%8C%96%E5%AD%97%E7%AC%A6%E4%B8%B2/">展开全文 >></a>
-        </p>
-      
-
-      
-      <div class="clearfix"></div>
-    </div>
-  </div>
-</article>
-
-<aside class="wrap-side-operation">
-    <div class="mod-side-operation">
-        
-        <div class="jump-container" id="js-jump-container" style="display:none;">
-            <a href="javascript:void(0)" class="mod-side-operation__jump-to-top">
-                <i class="icon-font icon-back"></i>
-            </a>
-            <div id="js-jump-plan-container" class="jump-plan-container" style="top: -11px;">
-                <i class="icon-font icon-plane jump-plane"></i>
-            </div>
-        </div>
-        
-        
-    </div>
-</aside>
-
-
-
-
-  
-    <article id="post-cgpwn2-与-level2" class="article article-type-post  article-index" itemscope itemprop="blogPost">
-  <div class="article-inner">
-    
-      <header class="article-header">
-        
-  
-    <h1 itemprop="name">
-      <a class="article-title" href="/2021/10/04/cgpwn2-%E4%B8%8E-level2/">cgpwn2 与 level2</a>
-    </h1>
-  
-
-        
-        <a href="/2021/10/04/cgpwn2-%E4%B8%8E-level2/" class="archive-article-date">
-  	<time datetime="2021-10-04T08:31:55.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2021-10-04</time>
-</a>
-        
-      </header>
-    
-    <div class="article-entry" itemprop="articleBody">
-      
-        <p>收获 ：<br>用system来调用binsh达到pwn</p>
-<p><img src="/2021/10/04/cgpwn2-%E4%B8%8E-level2/clipboard.png" alt="BP"><br>同样的 ：<br>都有system函数<br>都是返回到system函数再返回binsh<br>都有栈溢出函数 （read和get）<br>不一样：<br>cgpwn2没有 binsh ，需要自己构建binsh 且赋值给一个地址上 ，然后在调用此地址作为system函数的参数 </p>
-<p>cgpwn2：<br>有两个gets函数我可以先输入一个bin/sh，如以下操作<br>//name区域的地址，我们向name区域输入/bin/sh,然后让这个地址作为system函数的 参数，完成system(“/bin/sh”)</p>
-<p><img src="/2021/10/04/cgpwn2-%E4%B8%8E-level2/12.png" alt="BP"></p>
-<p>先构建binsh放进name的地址里面 ，在gets函数中填充字节到r再到system函数再调用name的地址 来达到getshell</p>
-<p>level2：<br>直接有system函数又有binsh<br>直接构建payload 即可</p>
-
-      
-
-      
-    </div>
-    <div class="article-info article-info-index">
-      
-      
-      
-
-      
-        <p class="article-more-link">
-          <a class="article-more-a" href="/2021/10/04/cgpwn2-%E4%B8%8E-level2/">展开全文 >></a>
-        </p>
-      
-
-      
-      <div class="clearfix"></div>
-    </div>
-  </div>
-</article>
-
-<aside class="wrap-side-operation">
-    <div class="mod-side-operation">
-        
-        <div class="jump-container" id="js-jump-container" style="display:none;">
-            <a href="javascript:void(0)" class="mod-side-operation__jump-to-top">
-                <i class="icon-font icon-back"></i>
-            </a>
-            <div id="js-jump-plan-container" class="jump-plan-container" style="top: -11px;">
-                <i class="icon-font icon-plane jump-plane"></i>
-            </div>
-        </div>
-        
-        
-    </div>
-</aside>
-
-
-
-
-  
-    <article id="post-字节溢出" class="article article-type-post  article-index" itemscope itemprop="blogPost">
-  <div class="article-inner">
-    
-      <header class="article-header">
-        
-  
-    <h1 itemprop="name">
-      <a class="article-title" href="/2021/10/04/%E5%AD%97%E8%8A%82%E6%BA%A2%E5%87%BA/">字节溢出</a>
-    </h1>
-  
-
-        
-        <a href="/2021/10/04/%E5%AD%97%E8%8A%82%E6%BA%A2%E5%87%BA/" class="archive-article-date">
-  	<time datetime="2021-10-04T08:25:46.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2021-10-04</time>
-</a>
-        
-      </header>
-    
-    <div class="article-entry" itemprop="articleBody">
-      
-        <p>收获 ：<br>看见 如图类型定义 且有超范围 赋值则可以 知道 为字节 溢出</p>
-<p><img src="/2021/10/04/%E5%AD%97%E8%8A%82%E6%BA%A2%E5%87%BA/12.png" alt="BP"><br>字节溢出</p>
-<p>unsigned short int var1 = 1, var2 = 65537;</p>
-<p>对于unsigned类型的数据类型要注意，有可能是字节溢出</p>
-<p>password 字符串的长度可以是 4-8 个字符，也可 以是 259-263 个字符，<br>这里我们选择 262 作为输入<br><img src="/2021/10/04/%E5%AD%97%E8%8A%82%E6%BA%A2%E5%87%BA/clipboard.png" alt="BP"></p>
-<p> 在函数结尾，存在一条 leave 指令，而在 32 位程序中，leave 指令等于 mov esp,ebp 和 pop ebp 两条指令的组合，也就是说，在覆盖函数放回地址之前，还有一次出 栈操作，出栈数据大小 4 字节，即覆盖之前还需将这 4 字节覆盖了，才能实现跳 转指向 what_is_this 函数，编写利用脚本如下： 259-263 之间随机选择一个数，这里取 262，262-0x14-4-4=234</p>
-<p>payload = “a” * 0x14 + “aaaa” + p32(cat_flag_addr)+”a”*234<br>相当于 整个payload 需要 234 个字节 ， ’‘aaaa’为4各字节 ，p32(cat_flag_addr)也为4个字节，总共加上就是 262 啦</p>
-<p>1.查看字节溢出，<br>2.填充字节到返回函数后还要添加字节，由于是ebp的栈？  合数是234？</p>
-<p><img src="/2021/10/04/%E5%AD%97%E8%8A%82%E6%BA%A2%E5%87%BA/clipbo123.png" alt="BP"><br>.bss是 + ，.text是 - ？</p>
-
-      
-
-      
-    </div>
-    <div class="article-info article-info-index">
-      
-      
-      
-
-      
-        <p class="article-more-link">
-          <a class="article-more-a" href="/2021/10/04/%E5%AD%97%E8%8A%82%E6%BA%A2%E5%87%BA/">展开全文 >></a>
         </p>
       
 

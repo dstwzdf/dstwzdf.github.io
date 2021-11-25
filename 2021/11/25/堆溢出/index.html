@@ -6,15 +6,26 @@
   <meta name="renderer" content="webkit">
   <meta http-equiv="X-UA-Compatible" content="IE=edge" >
   <link rel="dns-prefetch" href="http://example.com">
-  <title>Archives: 2021/11 | Hexo</title>
+  <title>堆溢出 | Hexo</title>
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
-  <meta property="og:type" content="website">
-<meta property="og:title" content="Hexo">
-<meta property="og:url" content="http://example.com/archives/2021/11/index.html">
+  <meta name="description" content="堆的结构 ， 关键 ：由于堆溢出没有返回地址 ，所以我们的策略是去覆盖下一个chunk的信息。 寻找危险函数 ¶通过寻找危险函数，我们快速确定程序是否可能有堆溢出，以及有的话，堆溢出的位置在哪里。常见的危险函数如下输入gets，直接读取一行，忽略 ‘\x00’scanfvscanf输出sprintf字符串strcpy，字符串复制，遇到 ‘\x00’ 停止strcat，字符串拼接，遇到 ‘\x00’">
+<meta property="og:type" content="article">
+<meta property="og:title" content="堆溢出">
+<meta property="og:url" content="http://example.com/2021/11/25/%E5%A0%86%E6%BA%A2%E5%87%BA/index.html">
 <meta property="og:site_name" content="Hexo">
+<meta property="og:description" content="堆的结构 ， 关键 ：由于堆溢出没有返回地址 ，所以我们的策略是去覆盖下一个chunk的信息。 寻找危险函数 ¶通过寻找危险函数，我们快速确定程序是否可能有堆溢出，以及有的话，堆溢出的位置在哪里。常见的危险函数如下输入gets，直接读取一行，忽略 ‘\x00’scanfvscanf输出sprintf字符串strcpy，字符串复制，遇到 ‘\x00’ 停止strcat，字符串拼接，遇到 ‘\x00’">
 <meta property="og:locale" content="en_US">
+<meta property="og:image" content="http://example.com/2021/11/25/%E5%A0%86%E6%BA%A2%E5%87%BA/1.png">
+<meta property="og:image" content="http://example.com/2021/11/25/%E5%A0%86%E6%BA%A2%E5%87%BA/2.png">
+<meta property="og:image" content="http://example.com/2021/11/25/%E5%A0%86%E6%BA%A2%E5%87%BA/3.png">
+<meta property="og:image" content="http://example.com/2021/11/25/%E5%A0%86%E6%BA%A2%E5%87%BA/4.png">
+<meta property="og:image" content="http://example.com/2021/11/25/%E5%A0%86%E6%BA%A2%E5%87%BA/5.png">
+<meta property="og:image" content="http://example.com/2021/11/25/%E5%A0%86%E6%BA%A2%E5%87%BA/6.png">
+<meta property="article:published_time" content="2021-11-25T07:23:47.000Z">
+<meta property="article:modified_time" content="2021-11-25T07:25:55.864Z">
 <meta property="article:author" content="John Doe">
 <meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="http://example.com/2021/11/25/%E5%A0%86%E6%BA%A2%E5%87%BA/1.png">
   
     <link rel="alternative" href="/atom.xml" title="Hexo" type="application/atom+xml">
   
@@ -150,130 +161,178 @@
             <canvas data-colors="#eaeaea" data-sectionHeight="100" data-contentId="js-content" id="myCanvas1" class="anm-canvas"></canvas>
           </div>
           <div id="js-content" class="content-ll">
-            
-  
-  
+            <article id="post-堆溢出" class="article article-type-post " itemscope itemprop="blogPost">
+  <div class="article-inner">
     
-    
-      
-      
-      <section class="archives-wrap">
-        <div class="archive-year-wrap">
-          <a href="/archives/2021" class="archive-year">2021</a>
-        </div>
-        <div class="archives">
-    
-    <article class="archive-article archive-type-post">
-  <div class="archive-article-inner">
-    <header class="archive-article-header">
-      	<div class="article-meta">
-	      	<a href="/2021/11/25/%E9%B9%A4%E5%9F%8E%E6%9D%AF/" class="archive-article-date">
-  	<time datetime="2021-11-25T07:27:49.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2021-11-25</time>
-</a>
-        </div>
-    	 
+      <header class="article-header">
+        
   
-    <h1 itemprop="name">
-      <a class="archive-article-title" href="/2021/11/25/%E9%B9%A4%E5%9F%8E%E6%9D%AF/">鹤城杯</a>
+    <h1 class="article-title" itemprop="name">
+      堆溢出
     </h1>
   
 
-        <div class="article-info info-on-right">
-          
-          
-
-        </div>
-        <div class="clearfix"></div>
-    </header>
-  </div>
-</article>
-  
-    
-    
-    <article class="archive-article archive-type-post">
-  <div class="archive-article-inner">
-    <header class="archive-article-header">
-      	<div class="article-meta">
-	      	<a href="/2021/11/25/off-by-one/" class="archive-article-date">
-  	<time datetime="2021-11-25T07:26:29.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2021-11-25</time>
-</a>
-        </div>
-    	 
-  
-    <h1 itemprop="name">
-      <a class="archive-article-title" href="/2021/11/25/off-by-one/">off-by-one</a>
-    </h1>
-  
-
-        <div class="article-info info-on-right">
-          
-          
-
-        </div>
-        <div class="clearfix"></div>
-    </header>
-  </div>
-</article>
-  
-    
-    
-    <article class="archive-article archive-type-post">
-  <div class="archive-article-inner">
-    <header class="archive-article-header">
-      	<div class="article-meta">
-	      	<a href="/2021/11/25/%E5%A0%86%E6%BA%A2%E5%87%BA/" class="archive-article-date">
+        
+        <a href="/2021/11/25/%E5%A0%86%E6%BA%A2%E5%87%BA/" class="archive-article-date">
   	<time datetime="2021-11-25T07:23:47.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2021-11-25</time>
 </a>
-        </div>
-    	 
-  
-    <h1 itemprop="name">
-      <a class="archive-article-title" href="/2021/11/25/%E5%A0%86%E6%BA%A2%E5%87%BA/">堆溢出</a>
-    </h1>
-  
+        
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <p>堆的结构 ，<br><img src="/2021/11/25/%E5%A0%86%E6%BA%A2%E5%87%BA/1.png" alt="BP"><br><img src="/2021/11/25/%E5%A0%86%E6%BA%A2%E5%87%BA/2.png" alt="BP"></p>
+<p>关键 ：<br>由于堆溢出没有返回地址 ，所以我们的策略是去覆盖下一个chunk的信息。</p>
+<p>寻找危险函数 ¶<br>通过寻找危险函数，我们快速确定程序是否可能有堆溢出，以及有的话，堆溢出的位置在哪里。<br>常见的危险函数如下<br>输入<br>gets，直接读取一行，忽略 ‘\x00’<br>scanf<br>vscanf<br>输出<br>sprintf<br>字符串<br>strcpy，字符串复制，遇到 ‘\x00’ 停止<br>strcat，字符串拼接，遇到 ‘\x00’ 停止<br>bcopy</p>
+<p>小总结 ¶<br>堆溢出中比较重要的几个步骤:<br>寻找堆分配函数 ¶<br>通常来说堆是通过调用 glibc 函数 malloc 进行分配的，在某些情况下会使用 calloc 分配。calloc 与 malloc 的区别是 calloc 在分配后会自动进行清空，这对于某些信息泄露漏洞的利用来说是致命的。<br>calloc(0x20);<br>//等同于<br>ptr=malloc(0x20);<br>memset(ptr,0,0x20);</p>
+<p>除此之外，还有一种分配是经由 realloc 进行的，realloc 函数可以身兼 malloc 和 free 两个函数的功能。<br>#include &lt;stdio.h&gt;</p>
+<p>int main(void)<br>{<br>  char *chunk,*chunk1;<br>  chunk=malloc(16);<br>  chunk1=realloc(chunk,32);<br>  return 0;<br>}</p>
+<p>realloc 的操作并不是像字面意义上那么简单，其内部会根据不同的情况进行不同操作<br>当 realloc(ptr,size) 的 size 不等于 ptr 的 size 时<br>如果申请 size &gt; 原来 size<br>如果 chunk 与 top chunk 相邻，直接扩展这个 chunk 到新 size 大小<br>如果 chunk 与 top chunk 不相邻，相当于 free(ptr),malloc(new_size)<br>如果申请 size &lt; 原来 size<br>如果相差不足以容得下一个最小 chunk(64 位下 32 个字节，32 位下 16 个字节)，则保持不变<br>如果相差可以容得下一个最小 chunk，则切割原 chunk 为两部分，free 掉后一部分<br>当 realloc(ptr,size) 的 size 等于 0 时，相当于 free(ptr)<br>当 realloc(ptr,size) 的 size 等于 ptr 的 size，不进行任何操作</p>
+<p>确定填充长度 ¶<br>这一部分主要是计算我们开始写入的地址与我们所要覆盖的地址之间的距离。 一个常见的误区是 malloc 的参数等于实际分配堆块的大小，但是事实上 ptmalloc 分配出来的大小是对齐的。这个长度一般是字长的 2 倍，比如 32 位系统是 8 个字节，64 位系统是 16 个字节。但是对于不大于 2 倍字长的请求，malloc 会直接返回 2 倍字长的块也就是最小 chunk，比如 64 位系统执行malloc(0)会返回用户区域为 16 字节的块。<br><img src="/2021/11/25/%E5%A0%86%E6%BA%A2%E5%87%BA/3.png" alt="BP"></p>
+<p>注意用户区域的大小不等于 chunk_head.size，chunk_head.size = 用户区域大小 + 2 * 字长<br>还有一点是之前所说的用户申请的内存大小会被修改，其有可能会使用与其物理相邻的下一个 chunk 的 prev_size 字段储存内容。回头再来看下之前的示例代码<br><img src="/2021/11/25/%E5%A0%86%E6%BA%A2%E5%87%BA/4.png" alt="BP"></p>
+<p>观察如上代码，我们申请的 chunk 大小是 24 个字节。但是我们将其编译为 64 位可执行程序时，实际上分配的内存会是 16 个字节而不是 24 个。<br><img src="/2021/11/25/%E5%A0%86%E6%BA%A2%E5%87%BA/5.png" alt="BP"></p>
+<p>16 个字节的空间是如何装得下 24 个字节的内容呢？答案是借用了下一个块的 pre_size 域。我们可来看一下用户申请的内存大小与 glibc 中实际分配的内存大小之间的转换。</p>
+<p><img src="/2021/11/25/%E5%A0%86%E6%BA%A2%E5%87%BA/6.png" alt="BP"></p>
+<p>当 req=24 时，request2size(24)=32。而除去 chunk 头部的 16 个字节。实际上用户可用 chunk 的字节数为 16。而根据我们前面学到的知识可以知道 chunk 的 pre_size 仅当它的前一块处于释放状态时才起作用。所以用户这时候其实还可以使用下一个 chunk 的 prev_size 字段，正好 24 个字节。实际上 ptmalloc 分配内存是以双字为基本单位，以 64 位系统为例，分配出来的空间是 16 的整数倍，即用户申请的 chunk 都是 16 字节对齐的。</p>
+<p>当64位程序申请的大小大于自身size但是是24的时候，presize为8所以可以在下一个chunk的presize开阔</p>
 
-        <div class="article-info info-on-right">
-          
-          
+      
 
+      
+        <div class="page-reward">
+          <a href="javascript:;" class="page-reward-btn tooltip-top">
+            <div class="tooltip tooltip-east">
+            <span class="tooltip-item">
+              赏
+            </span>
+            <span class="tooltip-content">
+              <span class="tooltip-text">
+                <span class="tooltip-inner">
+                  <p class="reward-p"><i class="icon icon-quo-left"></i>谢谢你请我吃糖果<i class="icon icon-quo-right"></i></p>
+                  <div class="reward-box">
+                    
+                    
+                  </div>
+                </span>
+              </span>
+            </span>
+          </div>
+          </a>
         </div>
-        <div class="clearfix"></div>
-    </header>
+      
+    </div>
+    <div class="article-info article-info-index">
+      
+      
+      
+
+      
+
+      
+        
+<div class="share-btn share-icons tooltip-left">
+  <div class="tooltip tooltip-east">
+    <span class="tooltip-item">
+      <a href="javascript:;" class="share-sns share-outer">
+        <i class="icon icon-share"></i>
+      </a>
+    </span>
+    <span class="tooltip-content">
+      <div class="share-wrap">
+        <div class="share-icons">
+          <a class="weibo share-sns" href="javascript:;" data-type="weibo">
+            <i class="icon icon-weibo"></i>
+          </a>
+          <a class="weixin share-sns wxFab" href="javascript:;" data-type="weixin">
+            <i class="icon icon-weixin"></i>
+          </a>
+          <a class="qq share-sns" href="javascript:;" data-type="qq">
+            <i class="icon icon-qq"></i>
+          </a>
+          <a class="douban share-sns" href="javascript:;" data-type="douban">
+            <i class="icon icon-douban"></i>
+          </a>
+          <a class="qzone share-sns" href="javascript:;" data-type="qzone">
+            <i class="icon icon-qzone"></i>
+          </a>
+          <a class="facebook share-sns" href="javascript:;" data-type="facebook">
+            <i class="icon icon-facebook"></i>
+          </a>
+          <a class="twitter share-sns" href="javascript:;" data-type="twitter">
+            <i class="icon icon-twitter"></i>
+          </a>
+          <a class="google share-sns" href="javascript:;" data-type="google">
+            <i class="icon icon-google"></i>
+          </a>
+        </div>
+      </div>
+    </span>
+  </div>
+</div>
+
+<div class="page-modal wx-share js-wx-box">
+    <a class="close js-modal-close" href="javascript:;"><i class="icon icon-close"></i></a>
+    <p>扫一扫，分享到微信</p>
+    <div class="wx-qrcode">
+      <img src="//pan.baidu.com/share/qrcode?url=http://example.com/2021/11/25/%E5%A0%86%E6%BA%A2%E5%87%BA/" alt="微信分享二维码">
+    </div>
+</div>
+
+<div class="mask js-mask"></div>
+      
+      <div class="clearfix"></div>
+    </div>
   </div>
 </article>
+
   
-    
-    
-    <article class="archive-article archive-type-post">
-  <div class="archive-article-inner">
-    <header class="archive-article-header">
-      	<div class="article-meta">
-	      	<a href="/2021/11/25/%E5%A0%86/" class="archive-article-date">
-  	<time datetime="2021-11-25T07:17:55.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2021-11-25</time>
-</a>
+<nav id="article-nav">
+  
+    <a href="/2021/11/25/off-by-one/" id="article-nav-newer" class="article-nav-link-wrap">
+      <i class="icon-circle-left"></i>
+      <div class="article-nav-title">
+        
+          off-by-one
+        
+      </div>
+    </a>
+  
+  
+    <a href="/2021/11/25/%E5%A0%86/" id="article-nav-older" class="article-nav-link-wrap">
+      <div class="article-nav-title">堆</div>
+      <i class="icon-circle-right"></i>
+    </a>
+  
+</nav>
+
+
+<aside class="wrap-side-operation">
+    <div class="mod-side-operation">
+        
+        <div class="jump-container" id="js-jump-container" style="display:none;">
+            <a href="javascript:void(0)" class="mod-side-operation__jump-to-top">
+                <i class="icon-font icon-back"></i>
+            </a>
+            <div id="js-jump-plan-container" class="jump-plan-container" style="top: -11px;">
+                <i class="icon-font icon-plane jump-plane"></i>
+            </div>
         </div>
-    	 
+        
+        
+    </div>
+</aside>
+
+
+
   
-    <h1 itemprop="name">
-      <a class="archive-article-title" href="/2021/11/25/%E5%A0%86/">堆</a>
-    </h1>
+  
   
 
-        <div class="article-info info-on-right">
-          
-          
-
-        </div>
-        <div class="clearfix"></div>
-    </header>
-  </div>
-</article>
-  
-  
-    </div></section>
   
 
-    
+  
+
+  
 
 
           </div>
@@ -296,8 +355,8 @@
 	var yiliaConfig = {
 		mathjax: false,
 		isHome: false,
-		isPost: false,
-		isArchive: true,
+		isPost: true,
+		isArchive: false,
 		isTag: false,
 		isCategory: false,
 		open_in_new: false,
