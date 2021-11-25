@@ -152,6 +152,80 @@
           <div id="js-content" class="content-ll">
             
   
+    <article id="post-堆" class="article article-type-post  article-index" itemscope itemprop="blogPost">
+  <div class="article-inner">
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2021/11/25/%E5%A0%86/">堆</a>
+    </h1>
+  
+
+        
+        <a href="/2021/11/25/%E5%A0%86/" class="archive-article-date">
+  	<time datetime="2021-11-25T07:17:55.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2021-11-25</time>
+</a>
+        
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <p>什么是堆 ¶<br>在程序运行过程中，堆可以提供动态分配的内存，允许程序申请大小未知的内存。堆其实就是程序虚拟地址空间的一块连续的线性区域，它由低地址向高地址方向增长。我们一般称管理堆的那部分程序为堆管理器。<br>堆管理器处于用户程序与内核中间，主要做以下工作<br>响应用户的申请内存请求，向操作系统申请内存，然后将其返回给用户程序。同时，为了保持内存管理的高效性，内核一般都会预先分配很大的一块连续的内存，然后让堆管理器通过某种算法管理这块内存。只有当出现了堆空间不足的情况，堆管理器才会再次与操作系统进行交互。<br>管理用户所释放的内存。一般来说，用户释放的内存并不是直接返还给操作系统的，而是由堆管理器进行管理。这些释放的内存可以来响应用户新申请的内存的请求。</p>
+<p>内存分配背后的系统调用 ¶<br>在前面提到的函数中，无论是 malloc 函数还是 free 函数，我们动态申请和释放内存时，都经常会使用，但是它们并不是真正与系统交互的函数。这些函数背后的系统调用主要是 (s)brk 函数以及 mmap, munmap 函数。<br>如下图所示，我们主要考虑对堆进行申请内存块的操作。<br><img src="/2021/11/25/%E5%A0%86/1.png" alt="BP"></p>
+<p>(s)brk¶   （增加堆段）<br>不开启 ASLR 保护时，start_brk 以及 brk 会指向 data/bss 段的结尾。<br>开启 ASLR 保护时，start_brk 以及 brk 也会指向同一位置，只是这个位置是在 data/bss 段结尾后的随机偏移处。<br>具体效果如下图（这个图片与网上流传的基本一致，这里是因为要画一张大图，所以自己单独画了下）所示</p>
+<p><img src="/2021/11/25/%E5%A0%86/2.png" alt="BP"><br>调用brk前<br><img src="/2021/11/25/%E5%A0%86/3.png" alt="BP"><br>调用brk 后<br><img src="/2021/11/25/%E5%A0%86/4.png" alt="BP"><br>start_brk = end_data = 0x804b000<br>brk = 0x804c000</p>
+<p>其中，关于堆的那一行<br>0x0804b000 是相应堆的起始地址<br>rw-p 表明堆具有可读可写权限，并且属于隐私数据。<br>00000000 表明文件偏移，由于这部分内容并不是从文件中映射得到的，所以为 0。<br>00:00 是主从 (Major/mirror) 的设备号，这部分内容也不是从文件中映射得到的，所以也都为 0。<br>0 表示着 Inode 号。由于这部分内容并不是从文件中映射得到的，所以为 0。</p>
+<p>mmap¶     （申请匿名映射段）<br>malloc 会使用 mmap 来创建独立的匿名映射段。匿名映射的目的主要是可以申请以 0 填充的内存，并且这块内存仅被调用进程所使用。</p>
+<p>执行mmap前<br><img src="/2021/11/25/%E5%A0%86/5.png" alt="BP"><br> 执行mmap后<br>从下面的输出可以看出，我们申请的内存与已经存在的内存段结合在了一起构成了 b7e00000 到 b7e21000 的 mmap 段。<br><img src="/2021/11/25/%E5%A0%86/6.png" alt="BP"></p>
+<p>munmap     （取消匿名映射段）<br>从下面的输出，我们可以看到我们原来申请的内存段已经没有了，内存段又恢复了原来的样子了。<br><img src="/2021/11/25/%E5%A0%86/7.png" alt="BP"></p>
+<p>多线程支持 ¶<br>在原来的 dlmalloc 实现中，当两个线程同时要申请内存时，只有一个线程可以进入临界区申请内存，而另外一个线程则必须等待直到临界区中不再有线程。这是因为所有的线程共享一个堆。在 glibc 的 ptmalloc 实现中，比较好的一点就是支持了多线程的快速访问。在新的实现中，所有的线程共享多个堆。</p>
+<p>第一次申请前<br><img src="/2021/11/25/%E5%A0%86/8.png" alt="BP"></p>
+<p>第一次申请后，<br>从下面的输出可以看出，堆段被建立了，并且它就紧邻着数据段，这说明 malloc 的背后是用 brk 函数来实现的。同时，需要注意的是，我们虽然只是申请了 1000 个字节，但是我们却得到了 0x0806c000-0x0804b000=0x21000 个字节的堆。这说明虽然程序可能只是向操作系统申请很小的内存，但是为了方便，操作系统会把很大的内存分配给程序。这样的话，就避免了多次内核态与用户态的切换，提高了程序的效率。我们称这一块连续的内存区域为 arena。此外，我们称由主线程申请的内存为 main_arena。后续的申请的内存会一直从这个 arena 中获取，直到空间不足。当 arena 空间不足时，它可以通过增加 brk 的方式来增加堆的空间。类似地，arena 也可以通过减小 brk 来缩小自己的空间。</p>
+<p><img src="/2021/11/25/%E5%A0%86/9.png" alt="BP"><br>在主线程释放内存后，我们从下面的输出可以看出，其对应的 arena 并没有进行回收，而是交由 glibc 来进行管理。当后面程序再次申请内存时，在 glibc 中管理的内存充足的情况下，glibc 就会根据堆分配的算法来给程序分配相应的内存。<br><img src="/2021/11/25/%E5%A0%86/10.png" alt="BP"><br>在第一个线程 malloc 之前，我们可以看到并没有出现与线程 1 相关的堆，但是出现了与线程 1 相关的栈。<br><img src="/2021/11/25/%E5%A0%86/11.png" alt="BP"><br>第一个线程 malloc 后， 我们可以从下面输出看出线程 1 的堆段被建立了。而且它所在的位置为内存映射段区域，同样大小也是 132KB(b7500000-b7521000)。因此这表明该线程申请的堆时，背后对应的函数为 mmap 函数。同时，我们可以看出实际真的分配给程序的内存为 1M(b7500000-b7600000)。而且，只有 132KB 的部分具有可读可写权限，这一块连续的区域成为 thread arena。<br><img src="/2021/11/25/%E5%A0%86/12.png" alt="BP"><br>在第一个线程释放内存后， 我们可以从下面的输出看到，这样释放内存同样不会把内存重新给系统。<br><img src="/2021/11/25/%E5%A0%86/13.png" alt="BP"></p>
+
+      
+
+      
+    </div>
+    <div class="article-info article-info-index">
+      
+      
+      
+
+      
+        <p class="article-more-link">
+          <a class="article-more-a" href="/2021/11/25/%E5%A0%86/">展开全文 >></a>
+        </p>
+      
+
+      
+      <div class="clearfix"></div>
+    </div>
+  </div>
+</article>
+
+<aside class="wrap-side-operation">
+    <div class="mod-side-operation">
+        
+        <div class="jump-container" id="js-jump-container" style="display:none;">
+            <a href="javascript:void(0)" class="mod-side-operation__jump-to-top">
+                <i class="icon-font icon-back"></i>
+            </a>
+            <div id="js-jump-plan-container" class="jump-plan-container" style="top: -11px;">
+                <i class="icon-font icon-plane jump-plane"></i>
+            </div>
+        </div>
+        
+        
+    </div>
+</aside>
+
+
+
+
+  
     <article id="post-ret2syscall-无system函数有binsh" class="article article-type-post  article-index" itemscope itemprop="blogPost">
   <div class="article-inner">
     
@@ -763,71 +837,6 @@
       
         <p class="article-more-link">
           <a class="article-more-a" href="/2021/10/04/%E5%AD%97%E8%8A%82%E6%BA%A2%E5%87%BA/">展开全文 >></a>
-        </p>
-      
-
-      
-      <div class="clearfix"></div>
-    </div>
-  </div>
-</article>
-
-<aside class="wrap-side-operation">
-    <div class="mod-side-operation">
-        
-        <div class="jump-container" id="js-jump-container" style="display:none;">
-            <a href="javascript:void(0)" class="mod-side-operation__jump-to-top">
-                <i class="icon-font icon-back"></i>
-            </a>
-            <div id="js-jump-plan-container" class="jump-plan-container" style="top: -11px;">
-                <i class="icon-font icon-plane jump-plane"></i>
-            </div>
-        </div>
-        
-        
-    </div>
-</aside>
-
-
-
-
-  
-    <article id="post-day-1保护机制" class="article article-type-post  article-index" itemscope itemprop="blogPost">
-  <div class="article-inner">
-    
-      <header class="article-header">
-        
-  
-    <h1 itemprop="name">
-      <a class="article-title" href="/2021/09/24/day-1%E4%BF%9D%E6%8A%A4%E6%9C%BA%E5%88%B6/">day 1保护机制</a>
-    </h1>
-  
-
-        
-        <a href="/2021/09/24/day-1%E4%BF%9D%E6%8A%A4%E6%9C%BA%E5%88%B6/" class="archive-article-date">
-  	<time datetime="2021-09-24T15:13:41.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2021-09-24</time>
-</a>
-        
-      </header>
-    
-    <div class="article-entry" itemprop="articleBody">
-      
-        <p>CANNARY(栈保护)<br>这个选项表示栈保护功能有没有开启。<br>栈溢出保护是一种缓冲区溢出攻击缓解手段，当函数存在缓冲区溢出攻击漏洞时，攻击者可以覆盖栈上的返回地址来让shellcode能够得到执行。当启用栈保护后，函数开始执行的时候会先往栈里插入cookie信息，当函数真正返回的时候会验证cookie信息是否合法，如果不合法就停止程序运行。攻击者在覆盖返回地址的时候往往也会将cookie信息给覆盖掉，导致栈保护检查失败而阻止shellcode的执行。在Linux中我们将cookie信息称为canary。</p>
-<p>NX（DEP）<br>       NX即No-eXecute（不可执行）的意思，NX（DEP）的基本原理是将数据所在内存页标识为不可执行，当程序溢出成功转入shellcode时，程序会尝试在数据页面上执行指令，此时CPU就会抛出异常，而不是去执行恶意指令。</p>
-<p>做题思路（ret2text）：<br>用了NX保护，不可以直接填充字节到 r ，需要 gdb 检查 某个地方的断点 ，再次 找到 输入 的字节或者数组 相对于esp和 ebp的 偏移量 ，才可以正确的 绕过NX保护机制，从而填充字节到返回地址 ，我们 需要 填充到（ebp+4）的字节才可以返回地址<br>1.检查某个输入变量的 下方断点<br>2.记录距离ebp的偏移量<br>3.填充  距离ebp+4  到返回地址 ？<br>  （+4是什么意思呢？是固定的吗 ？一定要加吗？）</p>
-
-      
-
-      
-    </div>
-    <div class="article-info article-info-index">
-      
-      
-      
-
-      
-        <p class="article-more-link">
-          <a class="article-more-a" href="/2021/09/24/day-1%E4%BF%9D%E6%8A%A4%E6%9C%BA%E5%88%B6/">展开全文 >></a>
         </p>
       
 
