@@ -152,6 +152,69 @@
           <div id="js-content" class="content-ll">
             
   
+    <article id="post-dd" class="article article-type-post  article-index" itemscope itemprop="blogPost">
+  <div class="article-inner">
+    
+      <header class="article-header">
+        
+  
+    <h1 itemprop="name">
+      <a class="article-title" href="/2022/10/13/dd/">dd</a>
+    </h1>
+  
+
+        
+        <a href="/2022/10/13/dd/" class="archive-article-date">
+  	<time datetime="2022-10-12T18:29:49.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2022-10-13</time>
+</a>
+        
+      </header>
+    
+    <div class="article-entry" itemprop="articleBody">
+      
+        <figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">djsakldjskl</span><br><span class="line">djsakd</span><br></pre></td></tr></table></figure>
+
+      
+
+      
+    </div>
+    <div class="article-info article-info-index">
+      
+      
+      
+
+      
+        <p class="article-more-link">
+          <a class="article-more-a" href="/2022/10/13/dd/">展开全文 >></a>
+        </p>
+      
+
+      
+      <div class="clearfix"></div>
+    </div>
+  </div>
+</article>
+
+<aside class="wrap-side-operation">
+    <div class="mod-side-operation">
+        
+        <div class="jump-container" id="js-jump-container" style="display:none;">
+            <a href="javascript:void(0)" class="mod-side-operation__jump-to-top">
+                <i class="icon-font icon-back"></i>
+            </a>
+            <div id="js-jump-plan-container" class="jump-plan-container" style="top: -11px;">
+                <i class="icon-font icon-plane jump-plane"></i>
+            </div>
+        </div>
+        
+        
+    </div>
+</aside>
+
+
+
+
+  
     <article id="post-programe-test" class="article article-type-post  article-index" itemscope itemprop="blogPost">
   <div class="article-inner">
     
@@ -748,78 +811,6 @@
       
         <p class="article-more-link">
           <a class="article-more-a" href="/2021/10/04/ret2shellcode-%E6%B2%A1%E6%9C%89system%E5%87%BD%E6%95%B0%E6%97%A0binsh/">展开全文 >></a>
-        </p>
-      
-
-      
-      <div class="clearfix"></div>
-    </div>
-  </div>
-</article>
-
-<aside class="wrap-side-operation">
-    <div class="mod-side-operation">
-        
-        <div class="jump-container" id="js-jump-container" style="display:none;">
-            <a href="javascript:void(0)" class="mod-side-operation__jump-to-top">
-                <i class="icon-font icon-back"></i>
-            </a>
-            <div id="js-jump-plan-container" class="jump-plan-container" style="top: -11px;">
-                <i class="icon-font icon-plane jump-plane"></i>
-            </div>
-        </div>
-        
-        
-    </div>
-</aside>
-
-
-
-
-  
-    <article id="post-String-格式化字符串-scanf" class="article article-type-post  article-index" itemscope itemprop="blogPost">
-  <div class="article-inner">
-    
-      <header class="article-header">
-        
-  
-    <h1 itemprop="name">
-      <a class="article-title" href="/2021/10/04/String-%E6%A0%BC%E5%BC%8F%E5%8C%96%E5%AD%97%E7%AC%A6%E4%B8%B2-scanf/">String   格式化字符串 scanf</a>
-    </h1>
-  
-
-        
-        <a href="/2021/10/04/String-%E6%A0%BC%E5%BC%8F%E5%8C%96%E5%AD%97%E7%AC%A6%E4%B8%B2-scanf/" class="archive-article-date">
-  	<time datetime="2021-10-04T08:38:54.000Z" itemprop="datePublished"><i class="icon-calendar icon"></i>2021-10-04</time>
-</a>
-        
-      </header>
-    
-    <div class="article-entry" itemprop="articleBody">
-      
-        <p><img src="/2021/10/04/String-%E6%A0%BC%E5%BC%8F%E5%8C%96%E5%AD%97%E7%AC%A6%E4%B8%B2-scanf/1.png" alt="BP"><br>无system  （构建shellcode）<br>格式化字符串 ×2 （偏移量要注意）<br>无binsh<br><img src="/2021/10/04/String-%E6%A0%BC%E5%BC%8F%E5%8C%96%E5%AD%97%E7%AC%A6%E4%B8%B2-scanf/2.png" alt="BP"></p>
-<p>问题 ：<br>context(arch=’amd64’, os=’linux’, log_level=’debug’)   ？<br>v4_addr = int(p.recvuntil(‘\n’)[:-1], 16)  ？  为什么不是 [ 0：4 ] ，加个16 什么意思<br><img src="/2021/10/04/String-%E6%A0%BC%E5%BC%8F%E5%8C%96%E5%AD%97%E7%AC%A6%E4%B8%B2-scanf/3.png" alt="BP"><br>binsh不用吗？ 与 ret2shellcode 不太一样 ？<br>format参数的偏移量指到第一位就好了吗？</p>
-<p>收获 ：<br>另外一种格式化字符串 scanf<br><img src="/2021/10/04/String-%E6%A0%BC%E5%BC%8F%E5%8C%96%E5%AD%97%E7%AC%A6%E4%B8%B2-scanf/4.png" alt="BP"><br>fgets(s, 100, stdin);     fgets 函数后就是printf 输出 format 参数 ， 直接 输入”aaaa“+“-%p”*10 ，只分了一次数一数就直接是aaaa在栈上的偏移量<br><img src="/2021/10/04/String-%E6%A0%BC%E5%BC%8F%E5%8C%96%E5%AD%97%E7%AC%A6%E4%B8%B2-scanf/5.png" alt="BP"></p>
-<p>在 String 中 ，分别有两个 scanf （） ，其次再printf 输出 format 参数，则 我们在第一个scanf 函数 输入v4 的地址给v2，后输入 ”aaaa“+“-%p”*10，找出偏移量，<br><img src="/2021/10/04/String-%E6%A0%BC%E5%BC%8F%E5%8C%96%E5%AD%97%E7%AC%A6%E4%B8%B2-scanf/6.png" alt="BP"><br>0x41414141，距离’AAAA‘ 有8偏移量，但实际偏移量是 8-1 （7），因为在第一次scanf 输入了 一次，已经是在format参数 的第一个了（也就是 0x41414141的前一位 ），所以偏移量是7。<br> 因为要往v4地址中输入数据，即指向v2（填了v4的地址）就行了 ，也就是偏移量是7，才能在v4中输入数据85</p>
-<p>解题思路：<br>格式字符串 输入一个地址后 查看 输入的数据在栈上偏移量（x）为多少   （即 %x$n 即可在对应地址中输入数据）<br>包装v4地址  –&gt; v4_addr = int(p.recvuntil(‘\n’)[:-1], 16)<br>构建shellcode<br><img src="/2021/10/04/String-%E6%A0%BC%E5%BC%8F%E5%8C%96%E5%AD%97%E7%AC%A6%E4%B8%B2-scanf/7.png" alt="BP"></p>
-<p>运行一遍 程序 ，找到了 格式化字符串的 楼栋函数 printf（format），<br><img src="/2021/10/04/String-%E6%A0%BC%E5%BC%8F%E5%8C%96%E5%AD%97%E7%AC%A6%E4%B8%B2-scanf/8.png" alt="BP"><br>接着走到这里，条件允许才可以read函数 读取我们自己构建的shellcode ，</p>
-<p>a1是前面提到的v4传入函数的形参，就是个地址。 a[0]=v4[0]=v3[0]=68 , a[1]=v4[1]=v3[1]=85 。要将a[0]和 a[1]修改为相同的值。<br>可以通过前面提到的格式化字符串漏洞来修改。<br>函数sub_400BB9()内的v2是我们输入的v4的地址，我们需要知道v2在栈内的位置，这样才能通过 %?$n 向v2指向的 地址处写入字符串长度。</p>
-<p><img src="/2021/10/04/String-%E6%A0%BC%E5%BC%8F%E5%8C%96%E5%AD%97%E7%AC%A6%E4%B8%B2-scanf/9.png" alt="BP"><br>之后构建shellcode，（但是为什么不用binsh？和ret2shellcode不太一样？）</p>
-<p>之后就pwn！啦</p>
-<p>获得执行system(“/bin/sh”)汇编代码所对应的机器码： asm(shellcraft.sh()) 。注意要指明arch和os。arch有 i386(x86)和amd64(x64)。攻防世界的题解区有人说这个函数失效，其实是因为他没指明环境。不同环境下的汇编代 码是不同的。<br> 代码的第二段从 printf(“secret[0] is %x\n”, v4, a2); 输出的字符串中，提取v4的地址，注意把末尾的 \n 剔 除。 然后代码的第四段Give me an address，注意源代码中 _isoc99_scanf(“%ld”, &amp;v2); ,读入的不是字符串，是 int64，是个数字，不要输入0x开头的字符串，也不要类似于1003fd2c的十六进制字符串，就输入一个十进制数字就 行。不要使用p64()转换！！！int转换即可，但是send发送的是一个字符串，所以再str一下。</p>
-
-      
-
-      
-    </div>
-    <div class="article-info article-info-index">
-      
-      
-      
-
-      
-        <p class="article-more-link">
-          <a class="article-more-a" href="/2021/10/04/String-%E6%A0%BC%E5%BC%8F%E5%8C%96%E5%AD%97%E7%AC%A6%E4%B8%B2-scanf/">展开全文 >></a>
         </p>
       
 
